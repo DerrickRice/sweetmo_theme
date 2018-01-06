@@ -19,7 +19,7 @@ function sweetmo_theme_setup() {
 			'uploads'       => true,
 			'default-image' => get_stylesheet_directory_uri() . '/images/header.jpg'
 			));
-
+	
 	add_action( 'omega_after_header', 'sweetmo_intro' );
 
 	add_filter( 'omega_site_description', 'sweetmo_site_description' );

@@ -52,7 +52,7 @@ body {
 	font-size: 1.6rem;	
 	font-weight: 400;
 	line-height: 1.625;
-	background-color: #f2f2f2;
+	background-color: #000000;
 	padding-top: 40px;	
 }
 
@@ -269,7 +269,7 @@ select,
 textarea {
 	background-color: #fff;
 	border: 1px solid #ccc;
-	padding: 12px 16px;
+	padding: 1px;
 	max-width: 100%;
 }
 
@@ -364,10 +364,6 @@ Structure and Layout
 
 .content {
 	float: left;
-	width: 600px;
-}
-
-.page-template-tpl-full-width .content {
 	width: 100%;
 }
 
@@ -949,7 +945,7 @@ Site Footer
 	font-size: 14px;
 	padding: 15px 0;
 	text-align: center;
-	background: #22130c;
+	background: #353535;
 }
 
 .site-footer p {
@@ -1149,4 +1145,122 @@ Media Queries
 	ul.menu-primary ul ul a {
 		padding-left: 50px;
 	}
+}
+
+/***********************************************
+ *
+ *
+ *
+ *
+ *
+ * PAGE SPECIFIC OR CONTENT SPECIFIC STYLES
+ *
+ *
+ *
+ *
+ *
+ *
+ **********************************************/
+
+/* ----- bio images ---- */
+
+.clear-div {
+  clear: both;
+  margin: 0;
+  padding: 0;
+}
+
+.bio-image {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 400px;
+  max-height: 400px;
+}
+
+@media (max-width: 600px) {
+  .bio-image {
+	max-width: none;
+    max-height: none;
+	width: 100%;
+	height: auto;
+  }
+  .bio-image.alignleft {
+    float: none;
+    margin: 0;
+  }
+  .bio-image.alignright {
+    float: none;
+    margin: 0;
+  }
+}
+
+/* double-wide lists on request */
+@media (min-width: 601px) {
+  ul.twocol, body.twocol ul {
+    list-style-position: inside;
+    columns: 2;
+    -webkit-columns: 2;
+    -moz-columns: 2;
+  }
+}
+
+/* ---- Bio Cards ----- */
+
+.bio-card {
+  background-color: #000000;
+  color: #ffffff;
+  display: inline-block;
+  margin: 0 24px 24px 0;
+  vertical-align: top;
+  text-align: center;
+  max-width: 100%;
+}
+
+@media (max-width: 600px) {
+  .bio-card {
+    margin-right: 0;
+  }
+
+  .bio-card .img-wrap {
+    max-width: none;
+    max-height: none;
+  }
+}
+
+.bio-card .title {
+  font-family: 'Satisfy', cursive;
+  font-size: 30px;
+  margin: auto;
+  text-align: center;
+}
+
+.bio-card .name {
+  font-family: 'Satisfy', cursive;
+  font-size: 30px;
+  margin: auto;
+  text-align: center;
+  line-height: 1.0;
+}
+
+.bio-card .role {
+  margin: auto;
+  margin-bottom: 5px;
+  text-align: center;
+  line-height: 1.2;
+}
+
+.bio-card .img-wrap {
+  padding-left: 5px;
+  padding-right: 5px;
+  max-width: 400px;
+  max-height: 400px;
+  display: inline-grid;
+}
+
+.bio-card img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 400px;
 }
