@@ -5,7 +5,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.0.1
+Version: 1.1.0
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: sweetmo
@@ -579,11 +579,10 @@ Site Header
 	background: none repeat scroll 0 0 #fff;
 }
 
+.nav-primary > .wrap,
 .site-header > .wrap {
-	padding: 20px 30px;
+	padding: 0;
 }
-
-.nav-primary > .wrap {padding: 0}
 
 /* Title Area
 --------------------------------------------- */
@@ -597,7 +596,7 @@ Site Header
 	padding: 0;
 }
 
-.site-title {
+.site-title, .site-intro {
 	font-family: 'BentonSansExtraComp-Regular';
 	text-transform: uppercase;
 	font-size: 64px;
@@ -623,25 +622,37 @@ Site Navigation
 	line-height: 1.5;
 	margin: 0;
 	padding: 0;
+	font-size: 0px;
+	list-style-type: none;
 }
 
-.omega-nav-menu li {
+.omega-nav-menu > li {
 	display: inline-block;
 	margin: 0;
 	padding: 0;
 	text-align: left;
+	font-size: 16px;
+	font-size: 1.6rem;
+	border-width: 0 0 0 1px;
+	border-style: solid;
+    -webkit-border-image: -webkit-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
+    -webkit-border-image: -webkit-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
+    -moz-border-image: -moz-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;    
+    -o-border-image: -o-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
+    border-image: linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
 }
 
-.omega-nav-menu a {
+.omega-nav-menu > li a {
 	border: none;
 	display: block;
-	padding: 18px 24px;
+	padding: 6px 8px;
 	position: relative;
 	color: #333;
 	text-decoration: none;
 }
 
 .omega-nav-menu ul {
+	list-style-type: none;
 	left: -9999px;
 	margin: 0;
 	opacity: 0;
@@ -662,7 +673,7 @@ Site Navigation
 	border: 1px solid #eee;
 	border-top: none;
 	font-size: 14px;
-	padding: 16px 20px;
+	padding: 8px 10px;
 	position: relative;
 	width: 200px;
 }
@@ -678,6 +689,11 @@ Site Navigation
 .omega-nav-menu li:hover > ul {
 	left: auto;
 	opacity: 1;
+}
+
+.omega-nav-menu li.current-menu-item,
+.omega-nav-menu li.current-menu-ancestor {
+	font-weight: bold;
 }
 
 /*
@@ -1013,7 +1029,9 @@ Media Queries
 	}
 
 	.site-header > .wrap {
+		/*
 	    padding: 0px 5% 0;
+	    */
 	}
 
 	.site-inner {
@@ -1092,26 +1110,21 @@ Media Queries
 
 	/* responsive menu */
 	.menu-icon {
-		position: absolute;
-		z-index: 9;
-		top: 0px;
-		right: 0px;
+		float: right;
 		display: block;
 		width: 24px;
 		margin: 25px 20px;
 		text-indent: -999px;
-		height: 17px;
 	    border-top:3px solid #333;
 	    border-bottom:3px solid #333;
 	}
-	 
-	.menu-icon:before {
-	    content:"";
-	    position:absolute;
-	    top:4px;
-	    left:0;
-	    width:100%;
-	    border-top:3px solid #333;
+
+	.menu-icon span {
+		display: block;
+		margin-top: 4px;
+		margin-bottom: 4px;
+		height: 0;
+		border-bottom: 3px solid #333;
 	}
 
 	.menu-icon:hover {
@@ -1148,8 +1161,9 @@ Media Queries
 	}
 
 	ul.menu-primary a {
-		padding-top: 14px;
-		padding-bottom: 14px;
+		padding: 14px 24px 14px 24px;
+		margin: 0;
+		border: 0;
 		border-bottom: 1px solid #eee;
 	}
 

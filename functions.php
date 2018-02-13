@@ -8,10 +8,7 @@
  * support post thumbnails.
  */
 function sweetmo_theme_setup() {
-
-	remove_action( 'omega_before_header', 'omega_get_primary_menu' );	
-	add_action( 'omega_header', 'omega_get_primary_menu' );
-
+	// ## THEME SUPPORT ## //
 	add_theme_support(
 		'custom-header',
 		array( 'header-text' => false,
@@ -19,11 +16,20 @@ function sweetmo_theme_setup() {
 			'uploads'       => true,
 			'default-image' => get_stylesheet_directory_uri() . '/images/header.jpg'
 			));
+
+	// ## OMEGA HOOKS ## //
+
+	// Do not show a title or description.
+	remove_action( 'omega_header', 'omega_branding' );
+
+	// Put the primary menu within the header, rather than above it.
+	remove_action( 'omega_before_header', 'omega_get_primary_menu' );
+	add_action( 'omega_header', 'omega_get_primary_menu' );
 	
+	// Use our custom title block, which is just an image (with alt text)
 	add_action( 'omega_after_header', 'sweetmo_intro' );
 
-	add_filter( 'omega_site_description', 'sweetmo_site_description' );
-
+	// ## STANDARD WORDPRESS HOOKS ## //
 	add_action( 'wp_enqueue_scripts', 'sweetmo_scripts_styles' );
 
 	load_child_theme_textdomain( 'sweetmo', get_stylesheet_directory() . '/languages' );
@@ -35,17 +41,24 @@ add_action( 'after_setup_theme', 'sweetmo_theme_setup', 11 );
  * Loads the intro.php template.
  */
 function sweetmo_intro() {
-	if (get_header_image()) {
-		echo '<div class="site-intro"><img class="header-image" src="' . esc_url( get_header_image() ) . '" alt="' . esc_html(get_bloginfo( 'description' )) . '" /></div>';
-	}
-}
+	$title = get_bloginfo('name');
+	$img_src = get_header_image();
 
-/**
- * disable site description
- */
-function sweetmo_site_description($desc) {
-	$desc = "";
-	return $desc;
+	$out = '<div class="site-intro">';
+	$out .= '<a href="' . esc_url(home_url()) . '">';
+	if ($img_src) {
+		$out .= '<img class="header-image" src="';
+		$out .= esc_url($img_src);
+		$out .= '" alt="';
+		$out .= esc_attr($title);
+		$out .= '" />';
+	} else {
+		$out .= esc_html($title);
+	}
+	$out .= '</a></div>';
+
+	// wants to be echoed
+	echo $out;
 }
 
 /**
