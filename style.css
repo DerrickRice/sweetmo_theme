@@ -5,7 +5,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.1.0
+Version: 1.1.1
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: sweetmo
@@ -1231,6 +1231,7 @@ Media Queries
 
 /* double-wide lists on request */
 @media (min-width: 601px) {
+	/* TODO: FIXME: body.twocol ul messes up the nav list. */
   ul.twocol, body.twocol ul {
     list-style-position: inside;
     columns: 2;

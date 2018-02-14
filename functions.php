@@ -65,6 +65,15 @@ function sweetmo_intro() {
  * Enqueue Scripts and Google fonts
  */
 function sweetmo_scripts_styles() {
+	/* Omega doesn't put a version on the URI which is maddening. Fixing it. */
+	wp_dequeue_style('omega-style');
+ 	wp_enqueue_style(
+ 		'sweetmo-style',
+ 		get_stylesheet_uri(),
+ 		array(),
+ 		wp_get_theme()->version
+ 	);
+
  	wp_enqueue_style('sweetmo-fonts', sweetmo_fonts_url(), array(), null );
  	wp_enqueue_script('jquery-superfish', get_stylesheet_directory_uri() . '/js/menu.js', array('jquery'), '1.0.0', true );
  	wp_enqueue_script('sweetmo-init', get_stylesheet_directory_uri() . '/js/init.js', array('jquery'));
