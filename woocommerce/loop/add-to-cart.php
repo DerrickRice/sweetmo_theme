@@ -32,7 +32,7 @@ if ($pcat && in_array($pcat->term_id, $product->get_category_ids())) {
 			// permalink only, rather than add_to_cart_url
 			esc_url( $product->get_permalink() ),
 			esc_attr( isset( $args['quantity'] ) ? $args['quantity'] : 1 ),
-			esc_attr( isset( $args['class'] ) ? $args['class'] : 'button' ),
+			$class,
 			isset( $args['attributes'] ) ? wc_implode_html_attributes( $args['attributes'] ) : '',
 			// hard coding this
 			esc_html(__( 'Select options', 'woocommerce' ))
