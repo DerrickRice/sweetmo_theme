@@ -22,8 +22,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 global $product;
 
-$category_id = get_cat_ID('pass');
-if ($category_id != 0 && in_array($category_id, $product->get_category_ids())) {
+$pcat = get_term_by('name', 'pass', 'product_cat');
+if ($pcat && in_array($pcat->term_id, $product->get_category_ids())) {
 	/* For passes, require that folks look into the options. */
 	echo apply_filters( 'woocommerce_loop_add_to_cart_link', // WPCS: XSS ok.
 		sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
