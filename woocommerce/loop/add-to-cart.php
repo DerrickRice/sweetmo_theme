@@ -25,6 +25,8 @@ global $product;
 $pcat = get_term_by('name', 'pass', 'product_cat');
 if ($pcat && in_array($pcat->term_id, $product->get_category_ids())) {
 	/* For passes, require that folks look into the options. */
+	$class = isset( $args['class'] ) ? $args['class'] : 'button';
+	$class = preg_replace('/(^|\s)(ajax_add_to_cart|add_to_cart_button)(?=$|\s)/i', ' ', $class);
 	echo apply_filters( 'woocommerce_loop_add_to_cart_link', // WPCS: XSS ok.
 		sprintf( '<a href="%s" data-quantity="%s" class="%s" %s>%s</a>',
 			// permalink only, rather than add_to_cart_url
