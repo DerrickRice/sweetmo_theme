@@ -1,8 +1,22 @@
 <?php
 
 class Schedule {
-	public static function header2($text, $anchor) {
-		echo '<a name="'.$anchor.'"></a><h2>'.$text.'</h2>';
+	public static function section($text, $anchor) {
+		echo '<a name="' . esc_attr($anchor) . '"></a>';
+		echo '<h2>' . esc_html($text) . '</h2>';
+	}
+
+	public static function header($event) {
+		echo '<div class="schedule_header">' . esc_html($event) . '</div>';
+	}
+
+	public static function time($start, $end) {
+		$text = $start . ' to ' . $end;
+		echo '<div class="grid1col schedule_time">' . esc_html($text) . '</div>';
+	}
+
+	public static function event($name) {
+		echo '<div class="grid1col schedule_event">' . esc_html($event) . '</div>';
 	}
 }
 
@@ -18,17 +32,28 @@ Jump to:
 	<li><a href="#sundayeve">Sunday Evening</a></li>
 </ul>
 
-<?php
-Schedule::header2("Thursday Evening", "thursdayeve");
+<?php Schedule::section("Thursday Evening", "thursdayeve"); ?>
+<div class="schedule_grid schedule_grid1">
+	<?php
+	Schedule::header("Blues Union");
+		Schedule::time("7:30", "8:30");
+		Schedule::time("8:30", "9:30");
+		Schedule::time("9:30", "12:00");
 
-Schedule::header2("Friday Evening", "fridayeve");
+ 	?>
+	<div class="schedule_header">
+		Blues Union
+	</div>
+</div>
 
-Schedule::header2("Saturday", "saturday");
+<?php Schedule::section("Friday Evening", "fridayeve"); ?>
 
-Schedule::header2("Saturday Evening", "saturdayeve");
+Schedule::section("Saturday", "saturday"); ?>
 
-Schedule::header2("Sunday", "sunday");
+Schedule::section("Saturday Evening", "saturdayeve");
 
-Schedule::header2("Sunday Evening", "sundayeve");
+Schedule::section("Sunday", "sunday");
+
+Schedule::section("Sunday Evening", "sundayeve");
 
 ?>
