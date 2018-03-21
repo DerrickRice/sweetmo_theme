@@ -142,11 +142,6 @@ dl dd {
 	margin: 5px 0 0 24px;
 }
 
-blockquote,
-blockquote::before {
-
-}
-
 blockquote {
 	margin: 0;
 	padding: 24px 40px;
@@ -420,9 +415,6 @@ Structure and Layout
 	position: absolute;
 	width: 1px;
 	display: none;
-}
-
-.sticky {
 }
 
 img.centered,
@@ -895,9 +887,6 @@ li.comment ol {
 	margin: 0 16px 24px 0;
 }
 
-.bypostauthor {
-}
-
 .form-allowed-tags {
 	background: #f5f5f5;
 	font-size: 14px;
@@ -908,9 +897,6 @@ li.comment ol {
 /*
 Sidebars
 ---------------------------------------------------------------------------------------------------- */
-
-.sidebar {
-}
 
 .widget-title {
 	word-wrap: break-word;
@@ -1026,12 +1012,6 @@ Media Queries
 
 	.header-image .site-header .wrap {
 		background-position: center top;
-	}
-
-	.site-header > .wrap {
-		/*
-	    padding: 0px 5% 0;
-	    */
 	}
 
 	.site-inner {
@@ -1195,6 +1175,18 @@ Media Queries
  *
  *
  **********************************************/
+
+/* Errors */
+
+.server_error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+    padding: 1em;
+    margin: 20px 0px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
 
 /* ----- bio images ---- */
 

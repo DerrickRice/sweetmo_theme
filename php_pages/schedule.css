@@ -1,0 +1,111 @@
+.schedule_grid {
+    display: grid;
+    font-size: 1.4rem;
+    margin: 22px 0;
+}
+
+/* Schedule grid with a single "event" column */
+.schedule_grid1 {
+    grid-template-columns: minmax(10em, auto) 1fr;
+}
+
+/* Schedule grid with four "event" columns */
+.schedule_grid4 {
+    grid-template-columns: minmax(10em, auto) repeat(4, 1fr);
+}
+
+.schedule_grid > div {
+    border: 1px solid grey;
+    padding: 5px;
+}
+
+/* https://css-tricks.com/stripes-css/ */
+.schedule_grid .schedule_header {
+    text-align: center;
+    font-weight: bold;
+    grid-column: 1 / -1;
+    background-color: #C0C0C0;
+}
+
+.schedule_grid .schedule_time {
+    font-weight: bold;
+    white-space: nowrap;
+    background-color: #E7E7E7;
+    display: flex;
+}
+
+.schedule_grid .schedule_time > div {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
+.schedule_grid .schedule_subtime {
+    font-style: oblique;
+    padding-left: 2em;
+}
+
+.schedule_grid .schedule_event {
+    text-align: center;
+}
+
+.schedule_grid .workshop_title {
+    font-weight: bold;
+}
+
+.schedule_grid .workshop_teacher {
+    /* nothing at the moment */
+}
+
+.schedule_grid .workshop_level {
+    font-style: oblique;
+}
+
+.schedule_grid .tba {
+    color: #AAAAAA;
+}
+
+/* A single width grid cell */
+
+.grid1col {
+  grid-column-end: span 1;
+}
+
+.grid4col {
+  grid-column-end: span 4;
+}
+
+/*
+
+.schedule_detail_container {
+  display: none;
+}
+
+.schedule_details {
+  display: none;
+}
+
+.schedule_grid .tv_stylize {
+  position: relative;
+}
+
+.schedule_grid .tv_stylize .shader {
+  height: 1em;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.schedule_grid .tv_stylize.tv_shown .shader {
+  background: linear-gradient(to bottom, white, grey);
+}
+
+span.tv_button {
+  text-decoration: underline;
+  color: blue;
+  // mouse hover
+}
+*/

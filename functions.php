@@ -8,16 +8,15 @@
  * support post thumbnails.
  */
 function sweetmo_theme_setup() {
-	// ## THEME SUPPORT ## //
 	add_theme_support(
 		'custom-header',
-		array( 'header-text' => false,
+		array(
+			'header-text' 	=> false,
 			'flex-width'    => true,
 			'uploads'       => true,
 			'default-image' => get_stylesheet_directory_uri() . '/images/header.jpg'
-			));
-
-	// ## OMEGA HOOKS ## //
+		)
+	);
 
 	// Do not show a title or description.
 	remove_action( 'omega_header', 'omega_branding' );
@@ -25,14 +24,17 @@ function sweetmo_theme_setup() {
 	// Put the primary menu within the header, rather than above it.
 	remove_action( 'omega_before_header', 'omega_get_primary_menu' );
 	add_action( 'omega_header', 'omega_get_primary_menu' );
-	
+
 	// Use our custom title block, which is just an image (with alt text)
 	add_action( 'omega_after_header', 'sweetmo_intro' );
 
-	// ## STANDARD WORDPRESS HOOKS ## //
-	add_action( 'wp_enqueue_scripts', 'sweetmo_scripts_styles' );
+	// Theme CSS and JavaScript
+	add_action( 'wp_enqueue_scripts', 'sweetmo_css_and_js' );
 
-	load_child_theme_textdomain( 'sweetmo', get_stylesheet_directory() . '/languages' );
+	load_child_theme_textdomain(
+		'sweetmo',
+		get_stylesheet_directory() . '/languages'
+	);
 }
 
 add_action( 'after_setup_theme', 'sweetmo_theme_setup', 11 );
@@ -61,10 +63,7 @@ function sweetmo_intro() {
 	echo $out;
 }
 
-/**
- * Enqueue Scripts and Google fonts
- */
-function sweetmo_scripts_styles() {
+function sweetmo_css_and_js() {
 	/* Omega doesn't put a version on the URI which is maddening. Fixing it. */
 	wp_dequeue_style('omega-style');
  	wp_enqueue_style(
@@ -74,47 +73,35 @@ function sweetmo_scripts_styles() {
  		wp_get_theme()->version
  	);
 
- 	wp_enqueue_style('sweetmo-fonts', sweetmo_fonts_url(), array(), null );
- 	wp_enqueue_script('jquery-superfish', get_stylesheet_directory_uri() . '/js/menu.js', array('jquery'), '1.0.0', true );
- 	wp_enqueue_script('sweetmo-init', get_stylesheet_directory_uri() . '/js/init.js', array('jquery'));
+ 	wp_enqueue_style(
+		'sweetmo-open-sans',
+		google_fonts_open_sans_css_url(),
+		array(),
+		wp_get_theme()->version
+	);
+
+ 	wp_enqueue_script(
+		'jquery-superfish',
+		get_stylesheet_directory_uri() . '/js/menu.js',
+		array('jquery'),	// depends on jQuery, which comes from elsewhere
+		'1.0.0',			// superfish version
+		true				// not really sure why we want this in the footer
+	);
+
+ 	wp_enqueue_script(
+		'sweetmo-init',
+		get_stylesheet_directory_uri() . '/js/init.js',
+		array('jquery'),
+		wp_get_theme()->version
+	);
 }
 
-/**
- * Register custom fonts.
- */
-function sweetmo_fonts_url() {
-	$fonts_url = '';
-	 
-	/* Translators: If there are characters in your language that are not
-	* supported by Lora, translate this to 'off'. Do not translate
-	* into your own language.
-	*/
-	$satisfy = _x( 'on', 'Satisfy font: on or off', 'sweetmo' );
-	 
-	/* Translators: If there are characters in your language that are not
-	* supported by Open Sans, translate this to 'off'. Do not translate
-	* into your own language.
-	*/
-	$open_sans = _x( 'on', 'Open Sans font: on or off', 'sweetmo' );
-	 
-	if ( 'off' !== $satisfy || 'off' !== $open_sans ) {
-		$font_families = array();
-		 
-		if ( 'off' !== $satisfy ) {
-			$font_families[] = 'Satisfy:400';
-		}
-		 
-		if ( 'off' !== $open_sans ) {
-			$font_families[] = 'Open Sans:400,600,700';
-		}
-		 
-		$query_args = array(
-			'family' => urlencode( implode( '|', $font_families ) ),
+function google_fonts_open_sans_css_url() {
+	return esc_url_raw( add_query_arg(
+		array(
+			'family' => urlencode( 'Open Sans:400,600,700' ),
 			'subset' => urlencode( 'latin,latin-ext' ),
-		);
-		 
-		$fonts_url = add_query_arg( $query_args, 'https://fonts.googleapis.com/css' );
-	}
-	 
-	return esc_url_raw( $fonts_url );
+		),
+		'https://fonts.googleapis.com/css'
+	) );
 }
