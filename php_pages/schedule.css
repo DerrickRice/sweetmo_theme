@@ -63,9 +63,11 @@
     font-weight: bold;
 }
 
+/* nothing at the moment
 .schedule_event .workshop_teacher {
-    /* nothing at the moment */
+
 }
+*/
 
 .schedule_event .workshop_level {
     font-style: oblique;
@@ -100,9 +102,11 @@
     display: none;
 }
 
+/* Nothing at the moment
 .workshop_details .workshop_details_top {
-    /* nothing for now */
+
 }
+*/
 
 .workshop_details .workshop_details_top .workshop_title,
 .workshop_details .workshop_details_top .workshop_teacher {
