@@ -62,13 +62,10 @@ function get_workshop_id_for_element(element) {
 }
 
 function tv_button_handler() {
-    console.log('Button handler activated');
     var id = get_workshop_id_for_element(this);
     if (! id) {
-        console.log('No ID found');
         return;
     }
-    console.log('Click handler for %O', id);
 
     if (id.grp) {
         var current_vis = toggle_visible_update_group_info(id);
@@ -82,7 +79,6 @@ function tv_button_handler() {
 
 jQuery(document).ready(function() {
     jQuery(".tv_button").click(tv_button_handler);
-    console.log('Button handler installed');
 });
 
 /*
