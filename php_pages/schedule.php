@@ -175,8 +175,15 @@ class Schedule {
 			);
 		}
 
+		$html .= self::_div_html(array('tv_style_shader'), '');
+
 		echo self::_div_html(
-			array("schedule_event", self::_span_class($span), "tv_button"),
+			array(
+				"schedule_event",
+				self::_span_class($span),
+				"tv_button",
+				"tv_stylize"
+			),
 			$html,
 			false,
 			self::_workshop_attrs($id)
@@ -242,6 +249,11 @@ class Schedule {
 				esc_html('Level: ' . $data['level'])
 			);
 		}
+
+		$html .= self::_div_html(
+			array('close_button', 'tv_button'),
+			esc_html('[close]')
+		);
 
 		echo self::_div_html(
 			array("workshop_details", "gridspan", "tv_toggle_vis"),

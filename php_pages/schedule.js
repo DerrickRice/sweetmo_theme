@@ -26,11 +26,9 @@ function toggle_visible_by_id(id) {
         return jQuery(this).attr("data-workshop") == id.id;
     }).toggle();
 
-/*
     jQuery(".tv_stylize").filter(function(){
-        return jQuery(this).attr("data-tv-id") == id;
+        return jQuery(this).attr("data-workshop") == id.id;
     }).toggleClass('tv_shown');
-*/
 }
 
 function extract_workshop_id_from_element(jq_element) {
