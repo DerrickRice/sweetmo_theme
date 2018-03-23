@@ -60,7 +60,7 @@ class Schedule {
 		}
 		$html .= esc_html($time_text);
 
-		echo self::_div_html($classes, $html);
+		echo self::_div_html($classes, $html, true);
 	}
 
 	public static function event($name, $span='1') {
@@ -68,9 +68,8 @@ class Schedule {
 	}
 
 	private static function _event_impl($html, $span='1') {
-		assert(in_array($span, array('1', '4')));
 		echo self::_div_html(
-			array("schedule_event", "grid{$span}col"),
+			array("schedule_event", self::_span_class($span)),
 			$html
 		);
 	}
@@ -84,22 +83,63 @@ class Schedule {
 		return $all_data[$id];
 	}
 
-	private static function _div_html($classes, $html) {
-		$rv = '<div class="' . esc_attr(implode(' ', $classes)) . '">';
-		$rv .= '<div>';	// needed for vertical alignment
+	private static function _div_html(
+		$classes,
+		$html,
+		$extra_div=false,
+		$attrs=null
+	) {
+		if (! $attrs) {
+			$attrs = array();
+		}
+		if ($classes) {
+			$attrs['class'] = implode(' ', $classes);
+		}
+		$rv = '<div ';
+		foreach ($attrs as $aname => $avalue) {
+			$rv .= $aname . '="' . esc_attr($avalue) . '" ';
+			# code...
+		}
+		$rv .= '>';
+
+		if ($extra_div) {
+			$rv .= '<div>';	// needed for vertical alignment
+		}
+
 		$rv .= $html;
-		$rv .= '</div>';
+
+		if ($extra_div) {
+			$rv .= '</div>';
+		}
 		$rv .= '</div>';
 		return $rv;
 	}
 
+	private static function _span_class($span) {
+		assert(in_array($span, array('1', '4')));
+		return "grid{$span}col";
+	}
+
+	private static function _workshop_attrs($id) {
+		$group = $id;
+
+		$parts = explode('.',$id);
+		if (sizeof($parts) > 1 ) {
+			$group = $parts[0];
+		}
+
+		return array(
+			'data-workshop' => $id,
+			'data-workshop-group' => $group
+		);
+	}
+
 	public static function workshop($id, $span='1') {
-		// TODO: Build an interesting workshop presentation. Borrow from ??
 		$data = self::_get_data('class', $id);
 		$html = '';
 
 		// Workshop title
-		if ($data['title_tbd'] || empty($data['title'])) {
+		if ($data['title_tba'] || empty($data['title'])) {
 			$html .= self::_div_html(
 				array('workshop_title', 'tbd'),
 				esc_html('Class TBA')
@@ -111,7 +151,7 @@ class Schedule {
 			);
 		}
 
-		if ($data['teacher_text_tbd'] || empty($data['teacher_text'])) {
+		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
 			$html .= self::_div_html(
 				array('workshop_teacher', 'tbd'),
 				esc_html('Instructor TBA')
@@ -123,7 +163,7 @@ class Schedule {
 			);
 		}
 
-		if ($data['level_tbd']) {
+		if ($data['level_tba']) {
 			$html .= self::_div_html(
 				array('workshop_level', 'tbd'),
 				esc_html('Level TBA')
@@ -135,14 +175,110 @@ class Schedule {
 			);
 		}
 
-		self::_event_impl($html, $span);
+		echo self::_div_html(
+			array("schedule_event", self::_span_class($span), "tv_button"),
+			$html,
+			false,
+			self::_workshop_attrs($id)
+		);
+	}
+
+	public static function workshop_details($id) {
+		$data = self::_get_data('class', $id);
+		$html = '';
+
+		// Workshop title
+		if ($data['title_tba'] || empty($data['title'])) {
+			$html .= self::_div_html(
+				array('workshop_title', 'tbd'),
+				esc_html('Class TBA')
+			);
+		} else {
+			$html .= self::_div_html(
+				array('workshop_title'),
+				esc_html($data['title'])
+			);
+		}
+
+		$html .= esc_html(' with ');
+
+		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
+			$html .= self::_div_html(
+				array('workshop_teacher', 'tbd'),
+				esc_html('Instructor TBA')
+			);
+		} else {
+			$html .= self::_div_html(
+				array('workshop_teacher'),
+				esc_html($data['teacher_text'])
+			);
+		}
+
+		$html = self::_div_html(
+			array('workshop_details_top'),
+			$html
+		);
+
+		if ($data['description_tba'] || empty($data['description'])) {
+			$html .= self::_div_html(
+				array('workshop_description', 'tbd'),
+				esc_html('Description TBA')
+			);
+		} else {
+			$html .= self::_div_html(
+				array('workshop_description'),
+				esc_html($data['description'])
+			);
+		}
+
+		if ($data['level_tba']) {
+			$html .= self::_div_html(
+				array('workshop_level', 'tbd'),
+				esc_html('Level: TBA')
+			);
+		} elseif (! empty($data['level'])) {
+			$html .= self::_div_html(
+				array('workshop_level'),
+				esc_html('Level: ' . $data['level'])
+			);
+		}
+
+		echo self::_div_html(
+			array("workshop_details", "gridspan", "tv_toggle_vis"),
+			$html,
+			false,
+			self::_workshop_attrs($id)
+		);
+	}
+
+	public static function workshops(...$ids){
+		foreach ($ids as $id) {
+			self::workshop($id);
+		}
+
+		foreach ($ids as $id) {
+			self::workshop_details($id);
+		}
+	}
+
+	private static function _local_path_url($local_path, $version=true) {
+		$url = get_stylesheet_directory_uri() . '/' . $local_path;
+		if ($version) {
+			return add_query_arg('v', wp_get_theme()->version, $url);
+		}
+		else {
+			return $url;
+		}
 	}
 
 	public static function css_include($local_path) {
-		$url = get_stylesheet_directory_uri() . '/' . $local_path;
-
 		echo '<link rel="stylesheet" type="text/css" media="all" ';
-		echo 'href="' . esc_attr($url) . '" />';
+		echo 'href="' . esc_attr(self::_local_path_url($local_path)) . '" />';
+	}
+
+	public static function js_include($local_path) {
+		echo '<script type="text/javascript" src="';
+		echo esc_attr(self::_local_path_url($local_path)) . '" ></script>';
 	}
 }
 
@@ -153,6 +289,7 @@ if ( ! Schedule::ready() ) {
 ?>
 
 <?php Schedule::css_include('php_pages/schedule.css'); ?>
+<?php Schedule::js_include('php_pages/schedule.js'); ?>
 
 Jump to:
 <ul>
@@ -203,29 +340,18 @@ Jump to:
 	<?php
 	Schedule::header("Workshops at MIT");
 		Schedule::time("10:30", "11:30");
-			Schedule::workshop("sat1.r1");
-			Schedule::workshop("sat1.r2");
-			Schedule::workshop("sat1.r3");
-			Schedule::workshop("sat1.r4");
+			Schedule::workshops("sat1.r1", "sat1.r2", "sat1.r3", "sat1.r4");
 		Schedule::time("11:45", "12:45");
-			Schedule::workshop("sat2.r1");
-			Schedule::workshop("sat2.r2");
-			Schedule::workshop("sat2.r3");
-			Schedule::workshop("sat3.r4");
+			Schedule::workshops("sat2.r1", "sat2.r2", "sat2.r3", "sat2.r4");
 		Schedule::time("12:45", "1:15");
 			Schedule::event("Lunch Break", "4");
 		Schedule::time("1:15", "2:15");
 			Schedule::workshop("sat3.r0", '4');
+			Schedule::workshop_details("sat3.r0");
 		Schedule::time("2:25", "3:25");
-			Schedule::workshop("sat4.r1");
-			Schedule::workshop("sat4.r2");
-			Schedule::workshop("sat4.r3");
-			Schedule::workshop("sat4.r4");
+			Schedule::workshops("sat4.r1", "sat4.r2", "sat4.r3", "sat4.r4");
 		Schedule::time("3:40", "4:40");
-			Schedule::workshop("sat5.r1");
-			Schedule::workshop("sat5.r2");
-			Schedule::workshop("sat5.r3");
-			Schedule::workshop("sat5.r4");
+			Schedule::workshops("sat5.r1", "sat5.r2", "sat5.r3", "sat5.r4");
 		Schedule::time("4:50", "5:50");
 			Schedule::event("M&M Prelims", "4");
 	?>
@@ -258,29 +384,17 @@ Jump to:
 	<?php
 	Schedule::header("Workshops at MIT");
 		Schedule::time("10:30", "11:30");
-			Schedule::workshop("sun1.r1");
-			Schedule::workshop("sun1.r2");
-			Schedule::workshop("sun1.r3");
-			Schedule::workshop("sun1.r4");
+			Schedule::workshops("sun1.r1", "sun1.r2", "sun1.r3", "sun1.r4");
 		Schedule::time("11:45", "12:45");
-			Schedule::workshop("sun2.r1");
-			Schedule::workshop("sun2.r2");
-			Schedule::workshop("sun2.r3");
-			Schedule::workshop("sun2.r4");
+			Schedule::workshops("sun2.r1", "sun2.r2", "sun2.r3", "sun2.r4");
 		Schedule::time("12:45", "1:15");
 			Schedule::event("Lunch Break", "4");
 		Schedule::time("1:15", "2:15");
 			Schedule::workshop("sun3.r0", '4');
 		Schedule::time("2:25", "3:25");
-			Schedule::workshop("sun4.r1");
-			Schedule::workshop("sun4.r2");
-			Schedule::workshop("sun4.r3");
-			Schedule::workshop("sun4.r4");
+			Schedule::workshops("sun4.r1", "sun4.r2", "sun4.r3", "sun4.r4");
 		Schedule::time("3:40", "4:40");
-			Schedule::workshop("sun5.r1");
-			Schedule::workshop("sun5.r2");
-			Schedule::workshop("sun5.r3");
-			Schedule::workshop("sun5.r4");
+			Schedule::workshops("sun5.r1", "sun5.r2", "sun5.r3", "sun5.r4");
 	?>
 </div>
 

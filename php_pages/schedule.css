@@ -48,30 +48,61 @@
     text-align: center;
 }
 
-.schedule_grid .workshop_title {
+/* styling for workshop blocks */
+
+.schedule_event .workshop_title {
     font-weight: bold;
 }
 
-.schedule_grid .workshop_teacher {
+.schedule_event .workshop_teacher {
     /* nothing at the moment */
 }
 
-.schedule_grid .workshop_level {
+.schedule_event .workshop_level {
     font-style: oblique;
 }
 
-.schedule_grid .tba {
+.schedule_event .tba {
     color: #AAAAAA;
+}
+
+/* styling for workshop details */
+
+.workshop_details.tv_toggle_vis {
+    display: none;
+}
+
+.workshop_details .workshop_details_top {
+    /* nothing for now */
+}
+
+.workshop_details .workshop_details_top .workshop_title,
+.workshop_details .workshop_details_top .workshop_teacher {
+    display: inline;
+    font-weight: bold;
+}
+
+.workshop_details .workshop_description {
+    text-indent: 2em;
+}
+
+.workshop_details .workshop_level {
+    font-style: oblique;
+    text-indent: 2em;
 }
 
 /* A single width grid cell */
 
 .grid1col {
-  grid-column-end: span 1;
+    grid-column-end: span 1;
 }
 
 .grid4col {
-  grid-column-end: span 4;
+    grid-column-end: span 4;
+}
+
+.gridspan {
+    grid-column: 1 / -1;
 }
 
 /*
