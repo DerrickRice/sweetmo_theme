@@ -89,13 +89,19 @@
 }
 
 .tv_stylize.tv_shown .tv_style_shader {
-  background: linear-gradient(to bottom, transparent, grey);
+  background: linear-gradient(to bottom, transparent, #BFDCD7);
+}
+
+.tv_stylize.tv_shown {
+    border-bottom: 1px solid #BFDCD7;
 }
 
 /* styling for workshop details */
 
-.workshop_details {
+.schedule_grid > div.workshop_details {
     position: relative;
+    border-top: 0px;
+    background-color: #BFDCD7;
 }
 
 .workshop_details.tv_toggle_vis {
