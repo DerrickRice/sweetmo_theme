@@ -35,9 +35,12 @@ function sweetmo_theme_setup() {
 		'sweetmo',
 		get_stylesheet_directory() . '/languages'
 	);
+
+	add_shortcode('smb_bio', 'handle_smb_bio_shortcode');
 }
 
 add_action( 'after_setup_theme', 'sweetmo_theme_setup', 11 );
+
 
 /**
  * Loads the intro.php template.
@@ -61,6 +64,18 @@ function sweetmo_intro() {
 
 	// wants to be echoed
 	echo $out;
+}
+
+function handle_smb_bio_shortcode($attrs = null, $content = null, $tag = null){
+	if (! $attrs) { $attrs = []; }
+	if (! $content) { return ''; }
+
+	set_query_var('__bio_card_target', $content);
+	ob_start();
+	get_template_part('php_pages/bio_card');
+	$results = ob_get_contents();
+	ob_end_clean();
+	return $results;
 }
 
 function sweetmo_css_and_js() {
