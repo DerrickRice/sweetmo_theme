@@ -31,11 +31,6 @@ function sweetmo_theme_setup() {
 	// Theme CSS and JavaScript
 	add_action( 'wp_enqueue_scripts', 'sweetmo_css_and_js' );
 
-	load_child_theme_textdomain(
-		'sweetmo',
-		get_stylesheet_directory() . '/languages'
-	);
-
 	add_shortcode('smb_bio', 'handle_smb_bio_shortcode');
 }
 
