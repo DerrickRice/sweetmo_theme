@@ -208,12 +208,13 @@ Site Header
 	background: none repeat scroll 0 0 #fff;
 }
 
+// NB: .site-title doesn't exist for Sweet Molasses Blues. /shrug.
 .site-title,
 .site-intro {
 	font-family: 'BentonSansExtraComp-Regular';
 	text-transform: uppercase;
 	font-size: 64px;
-	text-shadow: 1px 0px 0px #ffffff, 2px 0px 0px #333;
+	text-shadow: 1px 0px 0px #ffffff, 2px 0px 0px $text-color;
 	line-height: 1;
 	margin: 0;
 }
@@ -227,7 +228,7 @@ Site Header
 
 .site-title a,
 .site-title a:hover {
-	color: #333;
+	color: $text-color;
 	text-decoration: none;
 }
 
@@ -238,8 +239,8 @@ Site Header
 		width: 24px;
 		margin: 25px 20px;
 		text-indent: -999px;
-		border-top:3px solid #333;
-		border-bottom:3px solid #333;
+		border-top:3px solid $text-color;
+		border-bottom:3px solid $text-color;
 	}
 
 
@@ -248,7 +249,7 @@ Site Header
 		margin-top: 4px;
 		margin-bottom: 4px;
 		height: 0;
-		border-bottom: 3px solid #333;
+		border-bottom: 3px solid $text-color;
 	}
 
 	.menu-icon:hover {
@@ -283,25 +284,20 @@ Site Header
 	font-size: 1.6rem;
 	border-width: 0 0 0 1px;
 	border-style: solid;
-    -webkit-border-image: -webkit-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
-    -webkit-border-image: -webkit-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
-    -moz-border-image: -moz-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
-    -o-border-image: -o-linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
-    border-image: linear-gradient(to bottom, rgba(0,0,0,0), #333, rgba(0,0,0,0)) 1 100%;
-	@include mobile {
-		float: none;
-	}
+    -webkit-border-image: -webkit-gradient(to bottom, rgba(0,0,0,0), $text-color, rgba(0,0,0,0)) 1 100%;
+    -webkit-border-image: -webkit-linear-gradient(to bottom, rgba(0,0,0,0), $text-color, rgba(0,0,0,0)) 1 100%;
+    -moz-border-image: -moz-linear-gradient(to bottom, rgba(0,0,0,0), $text-color, rgba(0,0,0,0)) 1 100%;
+    -o-border-image: -o-linear-gradient(to bottom, rgba(0,0,0,0), $text-color, rgba(0,0,0,0)) 1 100%;
+    border-image: linear-gradient(to bottom, rgba(0,0,0,0), $text-color, rgba(0,0,0,0)) 1 100%;
 }
 
 .omega-nav-menu li a {
 	border: none;
 	display: block;
 	position: relative;
-	color: #333;
+	color: $text-color;
 	text-decoration: none;
 	background: #fff;
-	//font-size: 14px;
-	//font-size: 1.4rem;
 	padding: 6px 8px;
 	@include mobile {
 		padding: 20px 16px;
@@ -436,14 +432,12 @@ span.post_tag::before {
 }
 
 .navigation li a {
-	background: #333;
+	@include inverse-colors;
 	border-radius: 3px;
-	color: #fff;
 	cursor: pointer;
 	display: inline-block;
 	padding: 8px 12px;
 }
-
 
 /* Pagination */
 
@@ -616,7 +610,7 @@ li.comment ol {
 .site-footer {
 	color: #fff;
 	font-size: 14px;
-	padding: 15px 0;
+	padding: 45px 30px;
 	text-align: center;
 	background: #353535;
 	@include mobile {

@@ -15,6 +15,22 @@ Template: omega
 $body-font: 'Open Sans', sans-serif;
 $header-font: 'BentonSansExtraComp-Regular', Arial;
 $desktop-width: 1024;
+/* http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX */
+
+$lightest-color: #BFDCD7;
+$lighter-color: #98C5BD;
+$theme-color: #70ABA1;
+$darker-color: #51968A;
+$darkest-color: #368376;
+// additionally...
+$light-background: #fff;
+$dark-background: #00342B;
+$text-color: #333;
+
+@mixin inverse-colors {
+    background-color: $text-color;
+    color: $light-background;
+}
 
 @mixin mobile {
     @media only screen and (max-width: #{$desktop-width - 1px}) {
@@ -35,22 +51,6 @@ $desktop-width: 1024;
 @import "forms";
 @import "wordpress";
 
-/*
-http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX
-
-Main primary color:
-    color: #70ABA1;
-Derivative colors from lighter to darker
-    color: #BFDCD7;
-    color: #98C5BD;
-    (main color)
-    color: #51968A;
-    color: #368376;
-Additional very-dark background color:
-    color: #00342B
-Default foreground (text) color:
-    color: #333;
-*/
 
 /* Errors */
 
@@ -167,3 +167,7 @@ Default foreground (text) color:
   max-width: 100%;
   max-height: 400px;
 }
+
+// page specific styles
+
+@import "schedule";

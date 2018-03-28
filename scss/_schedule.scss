@@ -149,39 +149,3 @@
 .gridspan {
     grid-column: 1 / -1;
 }
-
-/*
-
-.schedule_detail_container {
-  display: none;
-}
-
-.schedule_details {
-  display: none;
-}
-
-.schedule_grid .tv_stylize {
-  position: relative;
-}
-
-.schedule_grid .tv_stylize .shader {
-  height: 1em;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  z-index: -1;
-}
-
-.schedule_grid .tv_stylize.tv_shown .shader {
-  background: linear-gradient(to bottom, white, grey);
-}
-
-span.tv_button {
-  text-decoration: underline;
-  color: blue;
-  // mouse hover
-}
-*/

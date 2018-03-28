@@ -1,5 +1,7 @@
 <?php
 
+require_once('include/shortcodes.php');
+
 /**
  * Sets up theme defaults and registers support for various WordPress features.
  *
@@ -31,7 +33,7 @@ function sweetmo_theme_setup() {
 	// Theme CSS and JavaScript
 	add_action( 'wp_enqueue_scripts', 'sweetmo_css_and_js' );
 
-	add_shortcode('smb_bio', 'handle_smb_bio_shortcode');
+	sweetmo_setup_shortcodes();
 }
 
 add_action( 'after_setup_theme', 'sweetmo_theme_setup', 11 );
@@ -59,18 +61,6 @@ function sweetmo_intro() {
 
 	// wants to be echoed
 	echo $out;
-}
-
-function handle_smb_bio_shortcode($attrs = null, $content = null, $tag = null){
-	if (! $attrs) { $attrs = []; }
-	if (! $content) { return ''; }
-
-	set_query_var('__bio_card_target', $content);
-	ob_start();
-	get_template_part('php_pages/bio_card');
-	$results = ob_get_contents();
-	ob_end_clean();
-	return $results;
 }
 
 function sweetmo_css_and_js() {

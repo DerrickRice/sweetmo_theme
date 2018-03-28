@@ -12,6 +12,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 Template: omega
 */
+/* http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX */
 /*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -649,8 +650,8 @@ input[type=reset],
 input[type=submit],
 .button {
   background-color: #333;
-  border: 0;
   color: #fff;
+  border: 0;
   cursor: pointer;
   font-weight: 700;
   padding: 16px 24px;
@@ -974,11 +975,6 @@ Site Header
   -o-border-image: -o-linear-gradient(to bottom, rgba(0, 0, 0, 0), #333, rgba(0, 0, 0, 0)) 1 100%;
   border-image: linear-gradient(to bottom, rgba(0, 0, 0, 0), #333, rgba(0, 0, 0, 0)) 1 100%;
 }
-@media only screen and (max-width: 1023px) {
-  .omega-nav-menu li {
-    float: none;
-  }
-}
 
 .omega-nav-menu li a {
   border: none;
@@ -1120,9 +1116,9 @@ span.post_tag::before {
 }
 
 .navigation li a {
-  background: #333;
-  border-radius: 3px;
+  background-color: #333;
   color: #fff;
+  border-radius: 3px;
   cursor: pointer;
   display: inline-block;
   padding: 8px 12px;
@@ -1298,7 +1294,7 @@ li.comment ol {
 .site-footer {
   color: #fff;
   font-size: 14px;
-  padding: 15px 0;
+  padding: 45px 30px;
   text-align: center;
   background: #353535;
 }
@@ -1336,22 +1332,6 @@ p.credit {
   }
 }
 
-/*
-http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX
-
-Main primary color:
-    color: #70ABA1;
-Derivative colors from lighter to darker
-    color: #BFDCD7;
-    color: #98C5BD;
-    (main color)
-    color: #51968A;
-    color: #368376;
-Additional very-dark background color:
-    color: #00342B
-Default foreground (text) color:
-    color: #333;
-*/
 /* Errors */
 .server_error {
   color: #a94442;
@@ -1462,4 +1442,151 @@ Default foreground (text) color:
   height: auto;
   max-width: 100%;
   max-height: 400px;
+}
+
+.schedule_grid {
+  display: grid;
+  font-size: 1.4rem;
+  margin: 22px 0;
+}
+
+/* Schedule grid with a single "event" column */
+.schedule_grid1 {
+  grid-template-columns: minmax(10em, auto) 1fr;
+}
+
+/* Schedule grid with four "event" columns */
+.schedule_grid4 {
+  grid-template-columns: minmax(10em, auto) repeat(4, 1fr);
+}
+
+.schedule_grid > div {
+  border: 1px solid grey;
+  padding: 5px;
+}
+
+/* https://css-tricks.com/stripes-css/ */
+.schedule_grid .schedule_header {
+  text-align: center;
+  font-weight: bold;
+  grid-column: 1/-1;
+  background-color: #C0C0C0;
+}
+
+.schedule_grid .schedule_time {
+  font-weight: bold;
+  white-space: nowrap;
+  background-color: #E7E7E7;
+  display: flex;
+}
+
+.schedule_grid .schedule_time > div {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.schedule_grid .schedule_subtime {
+  font-style: oblique;
+  padding-left: 2em;
+}
+
+.schedule_grid .schedule_event {
+  text-align: center;
+}
+
+/* styling for workshop blocks */
+.schedule_event {
+  position: relative;
+  z-index: 0;
+}
+
+.schedule_event div {
+  background: transparent;
+}
+
+.schedule_event .workshop_title {
+  font-weight: bold;
+}
+
+/* nothing at the moment
+.schedule_event .workshop_teacher {
+
+}
+*/
+.schedule_event .workshop_level {
+  font-style: oblique;
+}
+
+.schedule_event .tba {
+  color: #AAAAAA;
+}
+
+.tv_stylize .tv_style_shader {
+  height: 1em;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: -1;
+}
+
+.tv_stylize.tv_shown .tv_style_shader {
+  background: linear-gradient(to bottom, transparent, #BFDCD7);
+}
+
+.tv_stylize.tv_shown {
+  border-bottom: 1px solid #BFDCD7;
+}
+
+/* styling for workshop details */
+.schedule_grid > div.workshop_details {
+  position: relative;
+  border-top: 0px;
+  background-color: #BFDCD7;
+}
+
+.workshop_details.tv_toggle_vis {
+  display: none;
+}
+
+/* Nothing at the moment
+.workshop_details .workshop_details_top {
+
+}
+*/
+.workshop_details .workshop_details_top .workshop_title,
+.workshop_details .workshop_details_top .workshop_teacher {
+  display: inline;
+  font-weight: bold;
+}
+
+.workshop_details .workshop_description {
+  text-indent: 2em;
+}
+
+.workshop_details .workshop_level {
+  font-style: oblique;
+  text-indent: 2em;
+}
+
+.workshop_details .close_button {
+  position: absolute;
+  padding: 5px;
+  bottom: 0;
+  right: 0;
+}
+
+/* A single width grid cell */
+.grid1col {
+  grid-column-end: span 1;
+}
+
+.grid4col {
+  grid-column-end: span 4;
+}
+
+.gridspan {
+  grid-column: 1/-1;
 }

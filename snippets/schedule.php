@@ -282,12 +282,6 @@ class Schedule {
 			return $url;
 		}
 	}
-
-	public static function css_include($local_path) {
-		echo '<link rel="stylesheet" type="text/css" media="all" ';
-		echo 'href="' . esc_attr(self::_local_path_url($local_path)) . '" />';
-	}
-
 	public static function js_include($local_path) {
 		echo '<script type="text/javascript" src="';
 		echo esc_attr(self::_local_path_url($local_path)) . '" ></script>';
@@ -300,8 +294,7 @@ if ( ! Schedule::ready() ) {
 
 ?>
 
-<?php Schedule::css_include('php_pages/schedule.css'); ?>
-<?php Schedule::js_include('php_pages/schedule.js'); ?>
+<?php Schedule::js_include('js/schedule.js'); ?>
 
 Jump to:
 <ul>
