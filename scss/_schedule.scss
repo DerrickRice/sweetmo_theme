@@ -89,11 +89,11 @@
 }
 
 .tv_stylize.tv_shown .tv_style_shader {
-  background: linear-gradient(to bottom, transparent, #BFDCD7);
+  background: linear-gradient(to bottom, transparent, $lightest-color);
 }
 
 .tv_stylize.tv_shown {
-    border-bottom: 1px solid #BFDCD7;
+    border-bottom: 1px solid $lightest-color;
 }
 
 /* styling for workshop details */
@@ -101,7 +101,7 @@
 .schedule_grid > div.workshop_details {
     position: relative;
     border-top: 0px;
-    background-color: #BFDCD7;
+    background-color: $lightest-color;
 }
 
 .workshop_details.tv_toggle_vis {

@@ -14,9 +14,8 @@ Template: omega
 
 $body-font: 'Open Sans', sans-serif;
 $header-font: 'BentonSansExtraComp-Regular', Arial;
-$desktop-width: 1024;
-/* http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX */
 
+/* http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX */
 $lightest-color: #BFDCD7;
 $lighter-color: #98C5BD;
 $theme-color: #70ABA1;
@@ -28,20 +27,22 @@ $dark-background: #00342B;
 $text-color: #333;
 
 @mixin inverse-colors {
-    background-color: $text-color;
-    color: $light-background;
+	background-color: $text-color;
+	color: $light-background;
 }
 
+/* Responsive design and print-friendly pages */
+$desktop-width: 1024;
 @mixin mobile {
-    @media only screen and (max-width: #{$desktop-width - 1px}) {
-        @content;
-    }
+	@media only screen and (max-width: #{$desktop-width - 1px}) {
+		@content;
+	}
 }
 
 @mixin print {
-    @media print {
-        @content;
-    }
+	@media print {
+		@content;
+	}
 }
 
 @import "normalize";
@@ -51,123 +52,29 @@ $text-color: #333;
 @import "forms";
 @import "wordpress";
 
-
 /* Errors */
 
 .server_error {
-    color: #a94442;
-    background-color: #f2dede;
-    border-color: #ebccd1;
-    padding: 1em;
-    margin: 20px 0px;
-    border: 1px solid transparent;
-    border-radius: 4px;
-}
-
-/* Bio Images */
-
-.clear-div {
-  clear: both;
-  margin: 0;
-  padding: 0;
-}
-
-.bio-image {
-  display: block;
-  width: auto;
-  height: auto;
-  max-width: 400px;
-  max-height: 400px;
-}
-
-@media (max-width: 600px) {
-  .bio-image {
-	max-width: none;
-    max-height: none;
-	width: 100%;
-	height: auto;
-  }
-  .bio-image.alignleft {
-    float: none;
-    margin: 0;
-  }
-  .bio-image.alignright {
-    float: none;
-    margin: 0;
-  }
+	color: #A94442;
+	background-color: #F2DEDE;
+	border-color: #EBCCD1;
+	padding: 1em;
+	margin: 20px 0px;
+	border: 1px solid transparent;
+	border-radius: 4px;
 }
 
 /* double-wide lists on request */
 @media (min-width: 601px) {
-	/* TODO: FIXME: body.twocol ul messes up the nav list. */
-  ul.twocol, body.twocol ul {
-    list-style-position: inside;
-    columns: 2;
-    -webkit-columns: 2;
-    -moz-columns: 2;
-  }
+	ul.twocol, body.twocol #content ul {
+		list-style-position: inside;
+		columns: 2;
+		-webkit-columns: 2;
+		-moz-columns: 2;
+	}
 }
 
-/* ---- Bio Cards ----- */
 
-.bio-card {
-  background-color: #000000;
-  color: #ffffff;
-  display: inline-block;
-  margin: 0 24px 24px 0;
-  vertical-align: top;
-  text-align: center;
-  max-width: 100%;
-}
-
-@media (max-width: 600px) {
-  .bio-card {
-    margin-right: 0;
-  }
-
-  .bio-card .img-wrap {
-    max-width: none;
-    max-height: none;
-  }
-}
-
-.bio-card .title {
-  font-family: 'BentonSansExtraComp-Regular', cursive;
-  font-size: 30px;
-  margin: auto;
-  text-align: center;
-}
-
-.bio-card .name {
-  font-family: 'BentonSansExtraComp-Regular', cursive;
-  font-size: 30px;
-  margin: auto;
-  text-align: center;
-  line-height: 1.0;
-}
-
-.bio-card .role {
-  margin: auto;
-  margin-bottom: 5px;
-  text-align: center;
-  line-height: 1.2;
-}
-
-.bio-card .img-wrap {
-  padding-left: 5px;
-  padding-right: 5px;
-  max-width: 400px;
-  max-height: 400px;
-  display: inline-grid;
-}
-
-.bio-card img {
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 400px;
-}
-
-// page specific styles
-
+// page- and snippet- specific styles
+@import "bio_card";
 @import "schedule";

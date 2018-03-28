@@ -6,7 +6,7 @@
 	max-width: 980px;
 	margin: 0 auto;
 	position: relative;
-	background: #fff;
+	background: $light-background;
 	-webkit-box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
 	-moz-box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
 	box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
@@ -205,18 +205,23 @@ img.alignright,
 Site Header
 ---------------------------------------------------------------------------------------------------- */
 .site-header {
-	background: none repeat scroll 0 0 #fff;
+	background: none repeat scroll 0 0 $light-background;
 }
 
 // NB: .site-title doesn't exist for Sweet Molasses Blues. /shrug.
 .site-title,
 .site-intro {
-	font-family: 'BentonSansExtraComp-Regular';
+	font-family: $header-font;
 	text-transform: uppercase;
 	font-size: 64px;
 	text-shadow: 1px 0px 0px #ffffff, 2px 0px 0px $text-color;
-	line-height: 1;
+	line-height: 1.15;
 	margin: 0;
+}
+
+.header-image {
+	display: block;
+	color: $text-color;
 }
 
 .site-title {
@@ -297,7 +302,7 @@ Site Header
 	position: relative;
 	color: $text-color;
 	text-decoration: none;
-	background: #fff;
+	background: $light-background;
 	padding: 6px 8px;
 	@include mobile {
 		padding: 20px 16px;
@@ -352,11 +357,6 @@ Site Header
 
 .entry-content {
 	word-wrap: break-word;
-}
-
-.entry-content a,
-.entry-summary a {
-	text-decoration: underline;
 }
 
 .entry-content img.wp-post-image {
@@ -459,7 +459,7 @@ span.post_tag::before {
 
 .entry-comments,
 #respond {
-	background: #fff;
+	background: $light-background;
 	border-radius: 3px;
 }
 

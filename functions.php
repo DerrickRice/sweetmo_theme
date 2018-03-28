@@ -49,11 +49,10 @@ function sweetmo_intro() {
 	$out = '<div class="site-intro">';
 	$out .= '<a href="' . esc_url(home_url()) . '">';
 	if ($img_src) {
-		$out .= '<img class="header-image" src="';
-		$out .= esc_url($img_src);
-		$out .= '" alt="';
-		$out .= esc_attr($title);
-		$out .= '" />';
+		$out .= '<img class="header-image" ';
+		$out .= 'src="' . esc_url($img_src) . '" ';
+		$out .= 'alt="' . esc_attr($title) . '" ';
+		$out .= '></img>';
 	} else {
 		$out .= esc_html($title);
 	}
