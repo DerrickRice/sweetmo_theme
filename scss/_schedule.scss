@@ -78,18 +78,18 @@
 }
 
 .tv_stylize .tv_style_shader {
-  height: 1em;
-  margin: 0;
-  padding: 0;
-  position: absolute;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  z-index: -1;
+    height: 1em;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
 }
 
 .tv_stylize.tv_shown .tv_style_shader {
-  background: linear-gradient(to bottom, transparent, $lightest-color);
+    background: linear-gradient(to bottom, rgba($lightest-color, 0.0), $lightest-color);
 }
 
 .tv_stylize.tv_shown {

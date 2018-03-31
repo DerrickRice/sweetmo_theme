@@ -1,39 +1,59 @@
 <?php
 
+@include_once($WP_PLUGIN_DIR . '/my_data_shortcodes/includes/html.php');
+@include_once($WP_PLUGIN_DIR . '/my_data_shortcodes/includes/data.php');
+
 class Schedule {
 	public static function ready() {
-		return self::_ready_mdsc();
-	}
-
-	private static function _ready_mdsc() {
 		if ( ! class_exists('MDSC') ) {
-			self::_internal_error('MDSC class unavailable.');
+			echo sweetmo_internal_error_html(
+				'MDSC class unavailable.'
+			);
+			return false;
+		}
+
+		if ( ! class_exists('HtmlGen') ) {
+			echo sweetmo_internal_error_html(
+				'HtmlGen class unavailable.'
+			);
 			return false;
 		}
 
 		return true;
 	}
 
-	private static function _internal_error($text) {
-		echo self::_div_html(
-			array('server_error'),
-			esc_html('Internal server error: ' . $text)
-		);
-	}
-
 	public static function section($text, $anchor) {
-		echo '<a name="' . esc_attr($anchor) . '"></a>';
+		echo HtmlGen::eelem('a', array('name' => $anchor));
 		echo '<h2>' . esc_html($text) . '</h2>';
 	}
 
-	public static function header($event) {
-		echo self::_div_html(array('schedule_header'), esc_html($event));
-	}
+	/*
+	 * The header of a schedule grid. Usually indicates the beginning of the
+	 * event, such as the main dance or workshops.
+	 */
+ 	public static function header($event, $venueid=null, $note=null) {
+		// venue shortname
+		// venue longname
+		// $EVENT at $VENUE_SHORTNAME<br/>note
+		$title = esc_html($event);
+		if ($venueid) {
+			$title .= esc_html(' at ');
+			// TODO: instead of venueid, this should be the venue shortname with a link that opens up the venue description
+			$title .= esc_html($venueid);
+		}
+
+		$html = HtmlGen::div_wrap(esc_html($title), 'event');
+
+		if ($note) {
+			$html .= HtmlGen::div_wrap(esc_html($note), 'note');
+		}
+
+ 		echo HtmlGen::div_wrap($html, 'schedule_header');
+ 	}
 
 	public static function time(
 		$start,
 		$end,
-		$name=null,
 		$approx=false,
 		$sub=false
 	) {
@@ -60,17 +80,20 @@ class Schedule {
 		}
 		$html .= esc_html($time_text);
 
-		echo self::_div_html($classes, $html, true);
+		// need an extra inner div to vertically align things
+		$html = HtmlGen::div_wrap($html);
+		echo HtmlGen::div_wrap($html, $classes);
+	}
+
+	public static function live_music($id) {
+		// band has a name, shrotname, bio, photo, and band-break-DJ-id
+		self::event("Live music by $id and breaks DJ'd by __TODO__");
 	}
 
 	public static function event($name, $span='1') {
-		self::_event_impl(esc_html($name), $span);
-	}
-
-	private static function _event_impl($html, $span='1') {
-		echo self::_div_html(
-			array("schedule_event", self::_span_class($span)),
-			$html
+		echo HtmlGen::div_wrap(
+			esc_html($name),
+			array("schedule_event", self::_span_class($span))
 		);
 	}
 
@@ -81,38 +104,6 @@ class Schedule {
 		// TODO: Handle the case where where $id is invalid / not found.
 		// It currently returns null, I think.
 		return $all_data[$id];
-	}
-
-	private static function _div_html(
-		$classes,
-		$html,
-		$extra_div=false,
-		$attrs=null
-	) {
-		if (! $attrs) {
-			$attrs = array();
-		}
-		if ($classes) {
-			$attrs['class'] = implode(' ', $classes);
-		}
-		$rv = '<div ';
-		foreach ($attrs as $aname => $avalue) {
-			$rv .= $aname . '="' . esc_attr($avalue) . '" ';
-			# code...
-		}
-		$rv .= '>';
-
-		if ($extra_div) {
-			$rv .= '<div>';	// needed for vertical alignment
-		}
-
-		$rv .= $html;
-
-		if ($extra_div) {
-			$rv .= '</div>';
-		}
-		$rv .= '</div>';
-		return $rv;
 	}
 
 	private static function _span_class($span) {
@@ -140,54 +131,59 @@ class Schedule {
 
 		// Workshop title
 		if ($data['title_tba'] || empty($data['title'])) {
-			$html .= self::_div_html(
-				array('workshop_title', 'tbd'),
-				esc_html('Class TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Class TBA'),
+				array('workshop_title', 'tbd')
 			);
 		} else {
-			$html .= self::_div_html(
-				array('workshop_title'),
-				esc_html($data['title'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['title']),
+				'workshop_title'
 			);
 		}
 
 		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
-			$html .= self::_div_html(
-				array('workshop_teacher', 'tbd'),
-				esc_html('Instructor TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Instructor TBA'),
+				array('workshop_teacher', 'tbd')
 			);
 		} else {
-			$html .= self::_div_html(
-				array('workshop_teacher'),
-				esc_html($data['teacher_text'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['teacher_text']),
+				'workshop_teacher'
 			);
 		}
 
 		if ($data['level_tba']) {
-			$html .= self::_div_html(
-				array('workshop_level', 'tbd'),
-				esc_html('Level TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Level TBA'),
+				array('workshop_level', 'tbd')
 			);
 		} elseif (! empty($data['level'])) {
-			$html .= self::_div_html(
-				array('workshop_level'),
-				esc_html($data['level'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['level']),
+				'workshop_level'
 			);
 		}
 
-		$html .= self::_div_html(array('tv_style_shader'), '');
+		$html .= HtmlGen::div_wrap('', 'tv_style_shader');
 
-		echo self::_div_html(
-			array(
-				"schedule_event",
-				self::_span_class($span),
-				"tv_button",
-				"tv_stylize"
-			),
-			$html,
-			false,
-			self::_workshop_attrs($id)
+		$classes = array(
+			"schedule_event",
+			self::_span_class($span),
+			"tv_button",
+			"tv_stylize"
 		);
+
+		echo HtmlGen::elem(
+			'div',
+			array_merge(
+				array('class' => HtmlGen::classes($classes)),
+				self::_workshop_attrs($id)
+			)
+		);
+		echo $html;
+		echo '</div>';
 	}
 
 	public static function workshop_details($id) {
@@ -196,71 +192,72 @@ class Schedule {
 
 		// Workshop title
 		if ($data['title_tba'] || empty($data['title'])) {
-			$html .= self::_div_html(
-				array('workshop_title', 'tbd'),
-				esc_html('Class TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Class TBA'),
+				array('workshop_title', 'tbd')
 			);
 		} else {
-			$html .= self::_div_html(
-				array('workshop_title'),
-				esc_html($data['title'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['title']),
+				'workshop_title'
 			);
 		}
 
 		$html .= esc_html(' with ');
 
 		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
-			$html .= self::_div_html(
-				array('workshop_teacher', 'tbd'),
-				esc_html('Instructor TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Instructor TBA'),
+				array('workshop_teacher', 'tbd')
 			);
 		} else {
-			$html .= self::_div_html(
-				array('workshop_teacher'),
-				esc_html($data['teacher_text'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['teacher_text']),
+				'workshop_teacher'
 			);
 		}
 
-		$html = self::_div_html(
-			array('workshop_details_top'),
-			$html
-		);
+		$html = HtmlGen::div_wrap($html, 'workshop_details_top');
 
 		if ($data['description_tba'] || empty($data['description'])) {
-			$html .= self::_div_html(
-				array('workshop_description', 'tbd'),
-				esc_html('Description TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Description TBA'),
+				array('workshop_description', 'tbd')
 			);
 		} else {
-			$html .= self::_div_html(
-				array('workshop_description'),
-				esc_html($data['description'])
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['description']),
+				'workshop_description'
 			);
 		}
 
 		if ($data['level_tba']) {
-			$html .= self::_div_html(
-				array('workshop_level', 'tbd'),
-				esc_html('Level: TBA')
+			$html .= HtmlGen::div_wrap(
+				esc_html('Level: TBA'),
+				array('workshop_level', 'tbd')
 			);
 		} elseif (! empty($data['level'])) {
-			$html .= self::_div_html(
-				array('workshop_level'),
-				esc_html('Level: ' . $data['level'])
+			$html .= HtmlGen::div_wrap(
+				esc_html('Level: ' . $data['level']),
+				'workshop_level'
 			);
 		}
 
-		$html .= self::_div_html(
-			array('close_button', 'tv_button'),
-			esc_html('[close]')
+		$html .= HtmlGen::div_wrap(
+			esc_html('[close]'),
+			array('close_button', 'tv_button')
 		);
 
-		echo self::_div_html(
-			array("workshop_details", "gridspan", "tv_toggle_vis"),
-			$html,
-			false,
-			self::_workshop_attrs($id)
+		$classes = array("workshop_details", "gridspan", "tv_toggle_vis");
+		echo HtmlGen::elem(
+			'div',
+			array_merge(
+				array('class' => HtmlGen::classes($classes)),
+				self::_workshop_attrs($id)
+			)
 		);
+		echo $html;
+		echo '</div>';
 	}
 
 	public static function workshops(...$ids){
@@ -283,8 +280,13 @@ class Schedule {
 		}
 	}
 	public static function js_include($local_path) {
-		echo '<script type="text/javascript" src="';
-		echo esc_attr(self::_local_path_url($local_path)) . '" ></script>';
+		echo HtmlGen::eelem(
+			'script',
+			array(
+				'type' => 'text/javascript',
+				'src' => self::_local_path_url($local_path)
+			)
+		);
 	}
 }
 
@@ -308,13 +310,13 @@ Jump to:
 <?php Schedule::section("Thursday Evening", "thursdayeve"); ?>
 	<div class="schedule_grid schedule_grid1">
 		<?php
-		Schedule::header("Blues Union");
+		Schedule::header("Social Dance", 'bluesunion', 'Not included with price');
 			Schedule::time("7:30", "8:30");
 				Schedule::event("Beginner Lesson");
 			Schedule::time("8:30", "9:30");
 				Schedule::event("Intermediate+ Lesson");
 			Schedule::time("9:30", "12:00");
-				Schedule::event("Social dance");
+				Schedule::live_music("band0");
 	 	?>
 	</div>
 
@@ -322,19 +324,17 @@ Jump to:
 
 <div class="schedule_grid schedule_grid1">
 	<?php
-	Schedule::header("Social Dance at WCYC");
+	Schedule::header("Social Dance", 'wcyc');
 		Schedule::time("8:45", "11:45");
-			Schedule::event("Live Music with TBA");
-		Schedule::time(null, null, null, false, true);
-			Schedule::event("Band breaks DJ'd by TBD");
-		Schedule::time("9:30", null, "First band break", true, true);
+			Schedule::live_music("band1");
+		Schedule::time("9:30", null, true, true);
 			Schedule::event("Performance by TBD");
-		Schedule::time("10:30", null, "Second band break", true, true);
+		Schedule::time("10:30", null, true, true);
 			Schedule::event("Performance by TBD");
-	Schedule::header("Late Night at TBA");
+	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "3:30");
 			Schedule::event("DJ'd music by TBA");
-		Schedule::time("1:30", null, null, true, false);
+		Schedule::time("1:30", null, true, true);
 			Schedule::event("Performance by TBD");
 	?>
 </div>
@@ -343,7 +343,7 @@ Jump to:
 
 <div class="schedule_grid schedule_grid4">
 	<?php
-	Schedule::header("Workshops at MIT");
+	Schedule::header("Workshops", 'mit');
 		Schedule::time("10:30", "11:30");
 			Schedule::workshops("sat1.r1", "sat1.r2", "sat1.r3", "sat1.r4");
 		Schedule::time("11:45", "12:45");
@@ -366,19 +366,17 @@ Jump to:
 
 <div class="schedule_grid schedule_grid1">
 	<?php
-	Schedule::header("Social Dance at WCYC");
+	Schedule::header("Social Dance", 'wcyc');
 		Schedule::time("8:45", "11:45");
-			Schedule::event("Live Music with TBA");
-		Schedule::time(null, null, null, false, true);
-			Schedule::event("Band breaks DJ'd by TBD");
-		Schedule::time("9:30", null, "First band break", true, true);
+			Schedule::live_music("band2");
+		Schedule::time("9:30", null, true, true);
 			Schedule::event("Performance by TBD");
-		Schedule::time("10:30", null, "Second band break", true, true);
+		Schedule::time("10:30", null, true, true);
 			Schedule::event("Performance by TBD");
-	Schedule::header("Late Night at TBA");
+	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "4:30");
 			Schedule::event("DJ'd music by TBA");
-		Schedule::time("1:30", null, null, true, false);
+		Schedule::time("1:30", null, true, true);
 			Schedule::event("Performance by TBD");
 	?>
 </div>
@@ -387,7 +385,7 @@ Jump to:
 
 <div class="schedule_grid schedule_grid4">
 	<?php
-	Schedule::header("Workshops at MIT");
+	Schedule::header("Workshops", 'mit');
 		Schedule::time("10:30", "11:30");
 			Schedule::workshops("sun1.r1", "sun1.r2", "sun1.r3", "sun1.r4");
 		Schedule::time("11:45", "12:45");
@@ -407,21 +405,20 @@ Jump to:
 
 <div class="schedule_grid schedule_grid1">
 	<?php
-	Schedule::header("BBQ Dinner at WCYC");
+	Schedule::header("BBQ Dinner", 'wcyc');
 		Schedule::time("7:00", "8:30");
-	Schedule::header("Social Dance at WCYC");
+			Schedule::event("Get your tickets at...");
+	Schedule::header("Social Dance", 'wcyc');
 		Schedule::time("8:30", "11:45");
-			Schedule::event("Live Music with TBA");
-		Schedule::time(null, null, null, false, true);
-			Schedule::event("Band breaks DJ'd by TBD");
-		Schedule::time("9:30", null, "First band break", true, true);
+			Schedule::live_music("band3");
+		Schedule::time("9:30", null, true, true);
 			Schedule::event("Performance by TBD");
-		Schedule::time("10:30", null, "Second band break", true, true);
+		Schedule::time("10:30", null, true, true);
 			Schedule::event("Performance by TBD");
-	Schedule::header("Late Night at TBA");
+	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "4:00");
 			Schedule::event("DJ'd music by TBA");
-		Schedule::time("1:30", null, null, true, false);
+		Schedule::time("1:30", null, true, true);
 			Schedule::event("Performance by TBD");
 	?>
 </div>
