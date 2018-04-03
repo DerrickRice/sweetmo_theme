@@ -568,15 +568,14 @@ h6 {
   line-height: 1.4;
   margin: 0;
   margin-bottom: 22px;
-  padding: 0 0 0 8px;
-  background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
-  /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  padding: 0;
 }
 
 h1 {
+  padding: 0 0 0 6px;
+  background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
   font-size: 36px;
   border-left: 2px solid #368376;
-  padding-left: 6px;
   position: relative;
   margin-top: 2px;
 }
@@ -593,6 +592,8 @@ h1:before {
 
 h2 {
   font-size: 30px;
+  padding: 0 0 0 6px;
+  background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
 }
 
 h3 {
@@ -1406,174 +1407,97 @@ p.credit {
   font-style: oblique;
   margin-bottom: 10px;
 }
-/* Bio Images (due for revamp) */
-/*
-
-.clear-div {
-	clear: both;
-	margin: 0;
-	padding: 0;
+.smb_bio_card > div ._bio > p:last-child {
+  margin-bottom: 0px;
 }
 
-.bio-image {
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: 400px;
-    max-height: 400px;
-}
-
-.bio-card {
-	background-color: #000000;
-	color: #ffffff;
-	display: inline-block;
-	margin: 0 24px 24px 0;
-	vertical-align: top;
-	text-align: center;
-	max-width: 100%;
-}
-
-@media (max-width: 600px) {
-    .bio-image {
-        max-width: none;
-        max-height: none;
-        width: 100%;
-        height: auto;
-    }
-
-    .bio-image.alignleft {
-        float: none;
-        margin: 0;
-    }
-
-    .bio-image.alignright {
-        float: none;
-        margin: 0;
-    }
-
-	.bio-card {
-		margin-right: 0;
-	}
-
-	.bio-card .img-wrap {
-		max-width: none;
-		max-height: none;
-	}
-}
-
-.bio-card .title {
-	font-family: $header-font;
-	font-size: 30px;
-	margin: auto;
-	text-align: center;
-}
-
-.bio-card .name {
-    font-family: $header-font;
-    font-size: 30px;
-    margin: auto;
-    text-align: center;
-    line-height: 1.0;
-}
-
-.bio-card .role {
-    margin: auto;
-    margin-bottom: 5px;
-    text-align: center;
-    line-height: 1.2;
-}
-
-.bio-card .img-wrap {
-    padding-left: 5px;
-    padding-right: 5px;
-    max-width: 400px;
-    max-height: 400px;
-    display: inline-grid;
-}
-
-.bio-card img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 400px;
-}
-
-*/
 .schedule_grid {
   display: grid;
   font-size: 1.4rem;
   margin: 22px 0;
+  background-color: #fff;
+  overflow-x: scroll;
+  /* https://css-tricks.com/stripes-css/ */
 }
-
-/* Schedule grid with a single "event" column */
-.schedule_grid1 {
-  grid-template-columns: minmax(10em, auto) 1fr;
+.schedule_grid.schedule_grid1 {
+  grid-template-columns: min-content 1fr;
 }
-
-/* Schedule grid with four "event" columns */
-.schedule_grid4 {
-  grid-template-columns: minmax(10em, auto) repeat(4, 1fr);
+.schedule_grid.schedule_grid4 {
+  grid-template-columns: min-content repeat(4, 1fr);
 }
-
+.schedule_grid .grid1col {
+  grid-column-end: span 1;
+}
+.schedule_grid .grid4col {
+  grid-column-end: span 4;
+}
+.schedule_grid .gridspan {
+  grid-column: 1/-1;
+}
 .schedule_grid > div {
   border: 1px solid grey;
-  padding: 5px;
+  padding: 5px 8px;
 }
-
-/* https://css-tricks.com/stripes-css/ */
 .schedule_grid .schedule_header {
   text-align: center;
   font-weight: bold;
   grid-column: 1/-1;
   background-color: #C0C0C0;
 }
-
 .schedule_grid .schedule_time {
   font-weight: bold;
   white-space: nowrap;
   background-color: #E7E7E7;
   display: flex;
 }
-
+.schedule_grid .schedule_time.schedule_subtime {
+  padding-left: 1em;
+}
 .schedule_grid .schedule_time > div {
   margin-top: auto;
   margin-bottom: auto;
 }
-
-.schedule_grid .schedule_subtime {
-  font-style: oblique;
-  padding-left: 2em;
-}
-
 .schedule_grid .schedule_event {
+  min-width: 10em;
   text-align: center;
-}
-
-/* styling for workshop blocks */
-.schedule_event {
   position: relative;
   z-index: 0;
 }
-
-.schedule_event div {
+.schedule_grid .schedule_event div {
   background: transparent;
 }
-
-.schedule_event .workshop_title {
+.schedule_grid .schedule_event .workshop_title {
   font-weight: bold;
 }
-
-/* nothing at the moment
-.schedule_event .workshop_teacher {
-
-}
-*/
-.schedule_event .workshop_level {
+.schedule_grid .schedule_event .workshop_level {
   font-style: oblique;
 }
-
-.schedule_event .tba {
+.schedule_grid .schedule_event .tba {
   color: #AAAAAA;
+}
+.schedule_grid .workshop_details {
+  box-sizing: border-box;
+  position: relative;
+  left: 0px;
+  border-top: 0px;
+  background-color: #BFDCD7;
+}
+.schedule_grid .workshop_details .workshop_title, .schedule_grid .workshop_details .workshop_teacher {
+  display: inline;
+  font-weight: bold;
+}
+.schedule_grid .workshop_details .workshop_description {
+  text-indent: 2em;
+}
+.schedule_grid .workshop_details .workshop_level {
+  font-style: oblique;
+  text-indent: 2em;
+}
+.schedule_grid .workshop_details .close_button {
+  position: absolute;
+  padding: 5px;
+  bottom: 0;
+  right: 0;
 }
 
 .tv_stylize .tv_style_shader {
@@ -1587,61 +1511,15 @@ p.credit {
   z-index: -1;
 }
 
+.tv_stylize.tv_shown {
+  border-bottom: 1px solid #BFDCD7;
+}
 .tv_stylize.tv_shown .tv_style_shader {
   background: linear-gradient(to bottom, rgba(191, 220, 215, 0), #BFDCD7);
 }
 
-.tv_stylize.tv_shown {
-  border-bottom: 1px solid #BFDCD7;
-}
-
-/* styling for workshop details */
-.schedule_grid > div.workshop_details {
-  position: relative;
-  border-top: 0px;
-  background-color: #BFDCD7;
-}
-
-.workshop_details.tv_toggle_vis {
+.tv_toggle_vis {
   display: none;
 }
 
-/* Nothing at the moment
-.workshop_details .workshop_details_top {
-
-}
-*/
-.workshop_details .workshop_details_top .workshop_title,
-.workshop_details .workshop_details_top .workshop_teacher {
-  display: inline;
-  font-weight: bold;
-}
-
-.workshop_details .workshop_description {
-  text-indent: 2em;
-}
-
-.workshop_details .workshop_level {
-  font-style: oblique;
-  text-indent: 2em;
-}
-
-.workshop_details .close_button {
-  position: absolute;
-  padding: 5px;
-  bottom: 0;
-  right: 0;
-}
-
-/* A single width grid cell */
-.grid1col {
-  grid-column-end: span 1;
-}
-
-.grid4col {
-  grid-column-end: span 4;
-}
-
-.gridspan {
-  grid-column: 1/-1;
-}
+/* styling for workshop details */

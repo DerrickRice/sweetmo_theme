@@ -36,10 +36,10 @@ class Schedule {
 		// venue longname
 		// $EVENT at $VENUE_SHORTNAME<br/>note
 		$title = esc_html($event);
-		if ($venueid) {
-			$title .= esc_html(' at ');
-			// TODO: instead of venueid, this should be the venue shortname with a link that opens up the venue description
-			$title .= esc_html($venueid);
+
+		$venueinfo = self::_venue_link_html($venueid);
+		if ($venueinfo) {
+			$title .= " at $venueinfo";
 		}
 
 		$html = HtmlGen::div_wrap(esc_html($title), 'event');
@@ -50,6 +50,29 @@ class Schedule {
 
  		echo HtmlGen::div_wrap($html, 'schedule_header');
  	}
+
+	private static function _venue_link_html($venueid) {
+		if (empty($venueid)) {
+			return '';
+		}
+
+		$venue = self::_get_data('venue', $venueid);
+		if (empty($venue)) {
+			return '';
+		}
+
+		if ($venue['name_tba']) {
+			return esc_html('TBA');
+		}
+
+		$name = $venue['name'];
+		if (! empty($venue['shortname'])) {
+			$name = $venue['shortname'];
+		}
+
+		// TODO: build more interesting information
+		return esc_html($name);
+	}
 
 	public static function time(
 		$start,
@@ -87,12 +110,20 @@ class Schedule {
 
 	public static function live_music($id) {
 		// band has a name, shrotname, bio, photo, and band-break-DJ-id
-		self::event("Live music by $id and breaks DJ'd by __TODO__");
+		// "Live music (TBA) by $id and breaks DJ'd by __TODO__";
+		self::event("Live music (TBA)");
 	}
 
 	public static function event($name, $span='1') {
 		echo HtmlGen::div_wrap(
 			esc_html($name),
+			array("schedule_event", self::_span_class($span))
+		);
+	}
+
+	public static function performance($id, $span='1') {
+		echo HtmlGen::div_wrap(
+			esc_html("Special Performance (TBA)"),
 			array("schedule_event", self::_span_class($span))
 		);
 	}
@@ -133,7 +164,7 @@ class Schedule {
 		if ($data['title_tba'] || empty($data['title'])) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Class TBA'),
-				array('workshop_title', 'tbd')
+				array('workshop_title', 'tba')
 			);
 		} else {
 			$html .= HtmlGen::div_wrap(
@@ -145,7 +176,7 @@ class Schedule {
 		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Instructor TBA'),
-				array('workshop_teacher', 'tbd')
+				array('workshop_teacher', 'tba')
 			);
 		} else {
 			$html .= HtmlGen::div_wrap(
@@ -157,7 +188,7 @@ class Schedule {
 		if ($data['level_tba']) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Level TBA'),
-				array('workshop_level', 'tbd')
+				array('workshop_level', 'tba')
 			);
 		} elseif (! empty($data['level'])) {
 			$html .= HtmlGen::div_wrap(
@@ -194,7 +225,7 @@ class Schedule {
 		if ($data['title_tba'] || empty($data['title'])) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Class TBA'),
-				array('workshop_title', 'tbd')
+				array('workshop_title', 'tba')
 			);
 		} else {
 			$html .= HtmlGen::div_wrap(
@@ -248,7 +279,12 @@ class Schedule {
 			array('close_button', 'tv_button')
 		);
 
-		$classes = array("workshop_details", "gridspan", "tv_toggle_vis");
+		$classes = array(
+			"workshop_details",
+			"gridspan",
+			"tv_toggle_vis",
+			"sync_scroll",
+		);
 		echo HtmlGen::elem(
 			'div',
 			array_merge(
@@ -310,7 +346,7 @@ Jump to:
 <?php Schedule::section("Thursday Evening", "thursdayeve"); ?>
 	<div class="schedule_grid schedule_grid1">
 		<?php
-		Schedule::header("Social Dance", 'bluesunion', 'Not included with price');
+		Schedule::header("Social Dance", 'bluesunion', 'Sold Separately');
 			Schedule::time("7:30", "8:30");
 				Schedule::event("Beginner Lesson");
 			Schedule::time("8:30", "9:30");
@@ -328,9 +364,9 @@ Jump to:
 		Schedule::time("8:45", "11:45");
 			Schedule::live_music("band1");
 		Schedule::time("9:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::performance(null);
 		Schedule::time("10:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::performance(null);
 	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "3:30");
 			Schedule::event("DJ'd music by TBA");
@@ -370,14 +406,14 @@ Jump to:
 		Schedule::time("8:45", "11:45");
 			Schedule::live_music("band2");
 		Schedule::time("9:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::performance(null);
 		Schedule::time("10:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::event("Choreography Competition Finals");
 	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "4:30");
 			Schedule::event("DJ'd music by TBA");
-		Schedule::time("1:30", null, true, true);
-			Schedule::event("Performance by TBD");
+		Schedule::time("1:00", null, true, true);
+			Schedule::event("M&M Competition Finals");
 	?>
 </div>
 
@@ -407,18 +443,16 @@ Jump to:
 	<?php
 	Schedule::header("BBQ Dinner", 'wcyc');
 		Schedule::time("7:00", "8:30");
-			Schedule::event("Get your tickets at...");
+			Schedule::event("Sold Separately");
 	Schedule::header("Social Dance", 'wcyc');
 		Schedule::time("8:30", "11:45");
 			Schedule::live_music("band3");
 		Schedule::time("9:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::performance(null);
 		Schedule::time("10:30", null, true, true);
-			Schedule::event("Performance by TBD");
+			Schedule::performance(null);
 	Schedule::header("Late Night", 'tbd');
 		Schedule::time("12:00", "4:00");
 			Schedule::event("DJ'd music by TBA");
-		Schedule::time("1:30", null, true, true);
-			Schedule::event("Performance by TBD");
 	?>
 </div>

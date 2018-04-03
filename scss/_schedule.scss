@@ -2,80 +2,117 @@
     display: grid;
     font-size: 1.4rem;
     margin: 22px 0;
+    background-color: $light-background;
+    overflow-x: auto;
+
+    &.schedule_grid1 {
+        grid-template-columns: min-content 1fr;
+    }
+
+    &.schedule_grid4 {
+        grid-template-columns: min-content repeat(4, 1fr);
+    }
+
+    .grid1col {
+        grid-column-end: span 1;
+    }
+
+    .grid4col {
+        grid-column-end: span 4;
+    }
+
+    .gridspan {
+        grid-column: 1 / -1;
+    }
+
+    > div {
+        border: 1px solid grey;
+        padding: 5px 8px;
+    }
+
+    /* https://css-tricks.com/stripes-css/ */
+    .schedule_header {
+        text-align: center;
+        font-weight: bold;
+        grid-column: 1 / -1;
+        background-color: #C0C0C0;
+    }
+
+    .schedule_time {
+        font-weight: bold;
+        white-space: nowrap;
+        background-color: #E7E7E7;
+        display: flex;
+
+        &.schedule_subtime {
+            padding-left: 1em;
+        }
+
+        // for vertical alignment
+        > div {
+           margin-top: auto;
+           margin-bottom: auto;
+       }
+    }
+
+    .schedule_event {
+        min-width: 10em;
+        text-align: center;
+        position: relative;
+        z-index: 0;
+
+        div {
+            background: transparent;
+        }
+
+        .workshop_title {
+            font-weight: bold;
+        }
+
+        // .schedule_event .workshop_teacher {}
+
+        .workshop_level {
+            font-style: oblique;
+        }
+
+        .tba {
+            color: #AAAAAA;
+        }
+    }
+
+    .workshop_details {
+        //position: sticky;
+        //left: 0px;
+        box-sizing: border-box;
+        position: relative;
+        left: 0px;
+        border-top: 0px;
+        background-color: $lightest-color;
+
+       .workshop_title, .workshop_teacher {
+           display: inline;
+           font-weight: bold;
+       }
+
+       .workshop_description {
+           text-indent: 2em;
+       }
+
+       .workshop_level {
+           font-style: oblique;
+           text-indent: 2em;
+       }
+
+       .close_button {
+           position: absolute;
+           padding: 5px;
+           bottom: 0;
+           right: 0;
+       }
+   }
 }
 
-/* Schedule grid with a single "event" column */
-.schedule_grid1 {
-    grid-template-columns: minmax(10em, auto) 1fr;
-}
-
-/* Schedule grid with four "event" columns */
-.schedule_grid4 {
-    grid-template-columns: minmax(10em, auto) repeat(4, 1fr);
-}
-
-.schedule_grid > div {
-    border: 1px solid grey;
-    padding: 5px;
-}
-
-/* https://css-tricks.com/stripes-css/ */
-.schedule_grid .schedule_header {
-    text-align: center;
-    font-weight: bold;
-    grid-column: 1 / -1;
-    background-color: #C0C0C0;
-}
-
-.schedule_grid .schedule_time {
-    font-weight: bold;
-    white-space: nowrap;
-    background-color: #E7E7E7;
-    display: flex;
-}
-
-.schedule_grid .schedule_time > div {
-    margin-top: auto;
-    margin-bottom: auto;
-}
-
-.schedule_grid .schedule_subtime {
-    font-style: oblique;
-    padding-left: 2em;
-}
-
-.schedule_grid .schedule_event {
-    text-align: center;
-}
-
-/* styling for workshop blocks */
-
-.schedule_event {
-    position: relative;
-    z-index: 0;
-}
-
-.schedule_event div {
-    background: transparent;
-}
-
-.schedule_event .workshop_title {
-    font-weight: bold;
-}
-
-/* nothing at the moment
-.schedule_event .workshop_teacher {
-
-}
-*/
-
-.schedule_event .workshop_level {
-    font-style: oblique;
-}
-
-.schedule_event .tba {
-    color: #AAAAAA;
-}
+// Stlylizing and TV (Toggle Visible) stuff.
 
 .tv_stylize .tv_style_shader {
     height: 1em;
@@ -88,64 +125,15 @@
     z-index: -1;
 }
 
-.tv_stylize.tv_shown .tv_style_shader {
-    background: linear-gradient(to bottom, rgba($lightest-color, 0.0), $lightest-color);
-}
-
 .tv_stylize.tv_shown {
     border-bottom: 1px solid $lightest-color;
+    .tv_style_shader {
+        background: linear-gradient(to bottom, rgba($lightest-color, 0.0), $lightest-color);
+    }
 }
 
-/* styling for workshop details */
-
-.schedule_grid > div.workshop_details {
-    position: relative;
-    border-top: 0px;
-    background-color: $lightest-color;
-}
-
-.workshop_details.tv_toggle_vis {
+.tv_toggle_vis {
     display: none;
 }
 
-/* Nothing at the moment
-.workshop_details .workshop_details_top {
-
-}
-*/
-
-.workshop_details .workshop_details_top .workshop_title,
-.workshop_details .workshop_details_top .workshop_teacher {
-    display: inline;
-    font-weight: bold;
-}
-
-.workshop_details .workshop_description {
-    text-indent: 2em;
-}
-
-.workshop_details .workshop_level {
-    font-style: oblique;
-    text-indent: 2em;
-}
-
-.workshop_details .close_button {
-    position: absolute;
-    padding: 5px;
-    bottom: 0;
-    right: 0;
-}
-
-/* A single width grid cell */
-
-.grid1col {
-    grid-column-end: span 1;
-}
-
-.grid4col {
-    grid-column-end: span 4;
-}
-
-.gridspan {
-    grid-column: 1 / -1;
-}
+/* styling for workshop details */

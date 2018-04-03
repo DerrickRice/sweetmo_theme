@@ -26,6 +26,15 @@ function sweetmo_snippet(
         if ($__snippet_capture) {
             $__snippet_results = ob_get_contents();
         }
+    } catch (Exception $err) {
+        $errhtml = sweetmo_internal_error_html(
+            $err->getMessage()
+        );
+        if ($__snippet_capture) {
+            $snippet_results = $errhtml;
+        } else {
+            echo $errhtml;
+        }
     } finally {
         if ($__snippet_capture) {
             ob_end_clean();

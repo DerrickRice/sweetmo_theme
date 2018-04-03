@@ -21,10 +21,44 @@ function toggle_visible_update_group_info(id) {
     };
 }
 
+function sync_full(jq_element) {
+    var left = String(jq_element.parent().scrollLeft()) + "px";
+    var width = String(jq_element.parent().width()) + "px";
+    jq_element.css({'left': left, 'width': width});
+}
+
+function sync_scroll(jq_element) {
+    var left = String(jq_element.parent().scrollLeft()) + "px";
+    jq_element.css({'left': left});
+}
+
+function sync_all_full () {
+    jQuery(".sync_scroll:visible").each(
+        function(){
+            sync_full(jQuery(this));
+        }
+    );
+}
+
+function scroll_listener() {
+    var jq_scroll_element = jQuery(this);
+    var left = String(jq_scroll_element.scrollLeft()) + "px";
+
+    jq_scroll_element.find(".sync_scroll:visible").css({
+        'left': left
+    })
+}
+
 function toggle_visible_by_id(id) {
     jQuery(".tv_toggle_vis").filter(function(){
         return jQuery(this).attr("data-workshop") == id.id;
-    }).toggle();
+    }).each(function(){
+        var jq_element = jQuery(this);
+        if(jq_element.hasClass("sync_scroll")) {
+            sync_full(jq_element);
+        }
+        jq_element.toggle();
+    });
 
     jQuery(".tv_stylize").filter(function(){
         return jQuery(this).attr("data-workshop") == id.id;
@@ -75,75 +109,19 @@ function tv_button_handler() {
     toggle_visible_by_id(id);
 }
 
-jQuery(document).ready(function() {
+// setup function
+function schedule_set_up () {
     jQuery(".tv_button").click(tv_button_handler);
-});
 
-/*
-
-(function($) {
-// gets bound to a scrolling table's scroll event with the table as `this`
-function unboundScrollEventHandler () {
-    var scrollElement = $(this);
-    var jqScrollElement = $(scrollElement);
-
-    var left = jqScrollElement.scrollLeft();
-
-    jqScrollElement.find("tr > :first-child").css({
-        "position": "relative",
-        "left": left,
-    });
-}
-
-function triggerScroll () {
-    $(".scrolling").each(
-        function () {
-            $(this).scroll();
-        }
-    );
-}
-
-function setBackground(elements) {
-    elements.each(
-        function(k, element) {
-            var element = $(element);
-            var parent = $(element).parent();
-
-            var elementBackground = element.css("background-color");
-            elementBackground = (elementBackground == "transparent" || elementBackground == "rgba(0, 0, 0, 0)") ? null : elementBackground;
-
-            var parentBackground = parent.css("background-color");
-            parentBackground = (parentBackground == "transparent" || parentBackground == "rgba(0, 0, 0, 0)") ? null : parentBackground;
-
-            var background = parentBackground ? parentBackground : "white";
-            background = elementBackground ? elementBackground : background;
-
-            element.css("background-color", background);
-        }
-    );
-}
-
-function setUp () {
-    $(".scrolling").each(
-        function () {
-            var jqScrollElement = $(this);
-
-            // set an opaque background color on the cells
-            setBackground(jqScrollElement.find("tr > :first-child"));
-
-            // bind the event handler
-            var boundScrollEventHandler = unboundScrollEventHandler.bind(this);
-            jqScrollElement.scroll(boundScrollEventHandler);
+    jQuery(".sync_scroll").parent().each(
+        function(){
+            jQuery(this).scroll(scroll_listener.bind(this));
             return true;
         }
     );
 
-    $(window).resize(triggerScroll);
-
-    triggerScroll();
+    jQuery(window).resize(sync_all_full);
+    sync_all_full();
 }
 
-$(document).ready(setUp);
-})(jQuery);
-
-*/
+jQuery(document).ready(schedule_set_up);
