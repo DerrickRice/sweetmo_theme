@@ -6,7 +6,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.4.1
+Version: 1.4.2
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -1321,6 +1321,9 @@ p.credit {
 #content div.product h1.product_title:before {
   content: none;
 }
+#content div.product_meta {
+  display: none;
+}
 #content li.product {
   display: grid;
   grid-template-columns: 1fr;
@@ -1368,7 +1371,13 @@ p.credit {
 #content .woocommerce-terms-and-conditions h1:before, #content .woocommerce-terms-and-conditions h2:before, #content .woocommerce-terms-and-conditions h3:before, #content .woocommerce-terms-and-conditions h4:before, #content .woocommerce-terms-and-conditions h5:before {
   content: none;
 }
-#content .wccpf-fields-group-1 {
+#content .wccpf-fields-group-1,
+#content .wccpf-fields-group-2,
+#content .wccpf-fields-group-3,
+#content .wccpf-fields-group-4,
+#content .wccpf-fields-group-5,
+#content .wccpf-fields-group-6,
+#content .wccpf-fields-group-7 {
   margin-bottom: 10px;
   border-left: 3px solid #BFDCD7;
   padding-left: 5px;

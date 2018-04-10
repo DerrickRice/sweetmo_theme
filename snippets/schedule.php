@@ -402,9 +402,9 @@ Jump to:
 
 <div class="schedule_grid schedule_grid1">
 	<?php
-	Schedule::header("Ballroomin' Blues Social Dance", 'wcyc');
+	Schedule::header("Social Dance", 'wcyc');
 		Schedule::time("8:45", "11:45");
-			Schedule::event("Live Music co-sponsored with Swing City (TBA)");
+			Schedule::event("Live Music Ballroomin' Blues night co-sponsored with Swing City");
 			//Schedule::live_music("band2");
 		Schedule::time("9:30", null, true, true);
 			Schedule::performance(null);
