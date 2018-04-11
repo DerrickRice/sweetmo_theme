@@ -203,7 +203,7 @@ jQuery(function ($) {
 
 		if (jqelem.is("textarea") || jqelem.is("input[type=\"text\"]")) {
 			return jqelem.val();
-		} else if (jqelem.is("input[type=\"number\"]") {
+		} else if (jqelem.is("input[type=\"number\"]")) {
 			return Number(jqelem.val());
 		} else if (jqelem.is("input[type=\"checkbox\"]" || jqelem.is("input[type=\"radio\"]"))) {
 			if (jqelem.prop("checked")) {
@@ -226,7 +226,7 @@ jQuery(function ($) {
 
 		if (jqelem.is("textarea") || jqelem.is("input[type=\"text\"]")) {
 			jqelem.val("");
-		} else if (jqelem.is("input[type=\"number\"]") {
+		} else if (jqelem.is("input[type=\"number\"]")) {
 			jqelem.val("0");
 		} else if (jqelem.is("input[type=\"checkbox\"]" || jqelem.is("input[type=\"radio\"]"))) {
 			jqelem.prop("checked", false);
