@@ -127,7 +127,7 @@ class Schedule {
 		$all_data = MDSC::instance()->data->get_data($type);
 		// TODO: Handle the case where where $id is invalid / not found.
 		// It currently returns null, I think.
-		return $all_data[$id];
+		return isset($all_data[$id]) ? $all_data[$id] : null;
 	}
 
 	private static function _span_class($span) {
@@ -317,7 +317,7 @@ class Schedule {
 		$scount = 0;
 		$sections = array();
 		foreach ($lines as $line) {
-			$fc = $line[0];
+			$fc = isset($line[0]) ? $line[0] : null;
 			if ($fc == '#') {
 				$sections[] = $line;
 				$scount++;
@@ -372,7 +372,9 @@ class Schedule {
 		if (! empty($header[1])) {
 			$header = explode(',', $header[1], 2);
 			$loc = trim($header[0]);
-			$note = self::maybe_esc_html(trim($header[1]));
+			if (count($header) > 1) {
+				$note = self::maybe_esc_html(trim($header[1]));
+			}
 		}
 
 		self::header($title, $loc, $note);
@@ -384,7 +386,10 @@ class Schedule {
 
 		$times = explode('-', $section, 2);
 		$start = trim($times[0]);
-		$end = trim($times[1]);
+		$end = null;
+		if (count($times) > 1) {
+			$end = trim($times[1]);
+		}
 
 		$subtime = false;
 		if ($start[0] == '>') {
@@ -403,9 +408,11 @@ class Schedule {
 		$span = '1';
 
 		if ($section[0] == '[') {
-			$parts = explode(']', $section);
-			$span = substr($parts[0], 1);
-			$section = trim($parts[1]);
+			$parts = explode(']', $section, 2);
+			if (count($parts) > 1) {
+				$span = substr($parts[0], 1);
+				$section = trim($parts[1]);
+			}
 		}
 
 		$classes = explode(',', $section);
@@ -427,8 +434,10 @@ class Schedule {
 
 		if ($section[0] == '[') {
 			$parts = explode(']', $section);
-			$span = substr($parts[0], 1);
-			$section = trim($parts[1]);
+			if (count($parts) > 1) {
+				$span = substr($parts[0], 1);
+				$section = trim($parts[1]);
+			}
 		}
 
 		self::event($section, $span);
@@ -441,8 +450,10 @@ class Schedule {
 
 		if ($section[0] == '[') {
 			$parts = explode(']', $section);
-			$span = substr($parts[0], 1);
-			$section = trim($parts[1]);
+			if (count($parts) > 1) {
+				$span = substr($parts[0], 1);
+				$section = trim($parts[1]);
+			}
 		}
 
 		// $span currently unused.
@@ -456,8 +467,10 @@ class Schedule {
 
 		if ($section[0] == '[') {
 			$parts = explode(']', $section);
-			$span = substr($parts[0], 1);
-			$section = trim($parts[1]);
+			if (count($parts) > 1) {
+				$span = substr($parts[0], 1);
+				$section = trim($parts[1]);
+			}
 		}
 
 		self::performance($section, $span);
