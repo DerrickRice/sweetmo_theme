@@ -35,5 +35,12 @@ function sweetmo_sc_smb_venue($attrs = null, $content = null, $tag = null){
 }
 
 function sweetmo_sc_smb_schedule($attrs = null, $content = null, $tag = null){
-    return sweetmo_snippet('schedule');
+	if (! $attrs) { $attrs = []; }
+	if (! $content) { return ''; }
+
+    $args = array(
+        'schedule_markup' => $content,
+        'schedule_width' => isset($attrs['width']) ? $attrs['width'] : '1',
+    );
+    return sweetmo_snippet('schedule', $args);
 }

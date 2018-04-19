@@ -59,3 +59,5 @@ function sweetmo_internal_error_html($text_content) {
     $rv .= '</div>';
     return $rv;
 }
+
+1;
