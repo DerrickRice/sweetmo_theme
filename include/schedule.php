@@ -101,19 +101,6 @@ class Schedule {
 		echo HtmlGen::div_wrap($html, $classes);
 	}
 
-	public static function live_music($id) {
-		// band has a name, shrotname, bio, photo, and band-break-DJ-id
-		// "Live music (TBA) by $id and breaks DJ'd by __TODO__";
-		self::event("Live music (TBA)");
-	}
-
-	public static function event($name, $span='1') {
-		echo HtmlGen::div_wrap(
-			$name,
-			array("schedule_event", self::_span_class($span))
-		);
-	}
-
 	public static function performance($id, $span='1') {
 		echo HtmlGen::div_wrap(
 			esc_html("Special Performance (TBA)"),
@@ -310,15 +297,22 @@ class Schedule {
 		return true;
 	}
 
-
+	/**
+	 * Splits up markup into logical elements. Each element starts with a '#'
+	 * character at the beginning of a line. Any subsequent lines are appended to
+	 * the existing (previous) section. The only way to fail to parse is to have
+	 * non-empty content at the start of the markup block without a leading '#'.
+	 * @param string $content A block of text that is [smb_schedule] markup.
+	 * @return array(string) Each section of markup, unaltered.
+	 */
 	public static function split_sections($content) {
-		$lines = preg_split('/(\r\n?|\n)+/', $content);
+		$lines = preg_split('/(\r\n?|\n)/', $content);
 
 		$scount = 0;
 		$sections = array();
 		foreach ($lines as $line) {
-			$fc = isset($line[0]) ? $line[0] : null;
-			if ($fc == '#') {
+			$firstchar = isset($line[0]) ? $line[0] : null;
+			if ($firstchar == '#') {
 				$sections[] = $line;
 				$scount++;
 			} elseif ($scount >= 1) {
@@ -332,10 +326,17 @@ class Schedule {
 		return $sections;
 	}
 
+	/**
+	 * The main entry point for processing of schedule markup.
+	 *
+	 * @param  array(string) $sections Output from `split_sections`
+	 * @return boolean Success
+	 */
 	public static function handle_sections($sections) {
 		$group = self::new_grp_id();
 		foreach ($sections as $section) {
 
+			// Second character. (The first character is always '#')
 			$sc = $section[1];
 			if ($sc == '@') {
 				$group = self::new_grp_id();
@@ -440,11 +441,17 @@ class Schedule {
 			}
 		}
 
-		self::event($section, $span);
+		echo HtmlGen::div_wrap(
+			self::maybe_esc_html($section),
+			array("schedule_event", self::_span_class($span))
+		);
 	}
 
+	// handles '#band[X] ...' markup (the [X] is optional)
 	public static function handle_band_section($section) {
-		// remove '#band'
+		//
+		// remove '#band' and look for [$span]
+		//
 		$section = trim(substr($section, 5));
 		$span = '1';
 
@@ -456,8 +463,58 @@ class Schedule {
 			}
 		}
 
-		// $span currently unused.
-		self::live_music($section);
+		//
+		// parse $section for '{$band}/{$dj} {$title}'
+		// only the band is required.
+		//
+		$parts = preg_split('/\s+/', $section, 2);
+		$band_dj = trim($parts[0]);
+		$title = isset($parts[1]) ? $parts[1] : null;
+
+		$parts = explode('/', $band_dj, 2);
+		$band = $parts[0];
+		$dj = isset($parts[1]) ? $parts[1] : null;
+
+		// defaults...
+		if (empty($title)) {
+			$title = 'Live Music';
+		}
+
+		$band_data = self::_get_data('person', $band);
+		$dj_data = null;
+		if (!empty($dj)) {
+			$dj_data = self::_get_data('person', $dj);
+		}
+
+		//
+		// build the content out of $title, $band_data, and $dj_data
+		//
+		$content = '';
+		if (empty($band_data) || empty($band_data['name'])) {
+			$content .= '<b>' . esc_html('Band TBA') . '</b>';
+		} else {
+			$content .= '<b><a href="#">' . esc_html($band_data['name']);
+			$content .= '</a></b>';
+		}
+
+		if (!empty($title)) {
+			$content .= '<br/>';
+			$content .= self::maybe_esc_html(trim($title));
+		}
+
+		if (!empty($dj_data) && !empty($dj_data['name'])) {
+			$content .= '<br/>';
+			$content .= esc_html("Set breaks DJ'd by ");
+			$content .= '<a href="#">' . esc_html($dj_data['name']) . '</a>';
+		}
+
+		//
+		// emit!
+		//
+		echo HtmlGen::div_wrap(
+			$content,
+			array("schedule_event", self::_span_class($span))
+		);
 	}
 
 	public static function handle_performance_section($section) {
