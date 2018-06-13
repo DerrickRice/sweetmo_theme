@@ -205,17 +205,6 @@ $landscape-width: 480;
 	}
 }
 
-/* double-wide lists on request */
-@media (min-width: 601px) {
-	ul.twocol, body.twocol #content ul {
-		list-style-position: inside;
-		columns: 2;
-		-webkit-columns: 2;
-		-moz-columns: 2;
-	}
-}
-
-
 // page- and snippet- specific styles
 @import "bio_card";
 @import "schedule";
