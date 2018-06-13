@@ -3,7 +3,7 @@
 try {
 	if (!@include_once(__DIR__ . '/../include/schedule.php')) {
 		throw new Exception(
-			"Unable to include mdsc_deps.php"
+			"Unable to include schedule.php"
 		);
 	}
 } catch (Exception $err) {
