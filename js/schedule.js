@@ -109,9 +109,42 @@ function tv_button_handler() {
     toggle_visible_by_id(id);
 }
 
+function modal_button_handler(event) {
+    var element = jQuery(this);
+    var modal_id = element.attr('data-modal-id');
+
+    if (!modal_id) {
+        return;
+    }
+
+    event.preventDefault();
+    jQuery(document.getElementById(modal_id)).show();
+}
+
+function modal_close_handler() {
+    var element = jQuery(this);
+    var i;
+
+    if (element.hasClass('modal')) {
+        element.hide();
+        return;
+    }
+
+    parents = element.parents();
+    for (i=0; i<parents.length; i++) {
+        element = jQuery(parents[i]);
+        if (element.hasClass('modal')) {
+            element.hide();
+            return;
+        }
+    }
+}
+
 // setup function
 function schedule_set_up () {
     jQuery(".tv_button").click(tv_button_handler);
+    jQuery(".modal_button").click(modal_button_handler);
+    jQuery(".modal .close").click(modal_close_handler);
 
     jQuery(".sync_scroll").parent().each(
         function(){

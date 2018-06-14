@@ -6,6 +6,8 @@ if (!@include_once 'mdsc_deps.php') {
 
 class Schedule {
 	private static $_js_included = array();
+	private static $_modals = array();
+	private static $_modals_emitted = array();
 	private static $_supported_grid_sizes = array('1', '4');
 	private static $_group = 0;
 
@@ -297,6 +299,36 @@ class Schedule {
 		return true;
 	}
 
+	public static function emit_new_modals() {
+		foreach (self::$_modals as $modal_key => $html) {
+			if (in_array($modal_key, self::$_modals_emitted)) {
+				continue;
+			}
+			self::$_modals_emitted[] = $modal_key;
+
+			$id = 'modal-' . $modal_key;
+
+			self::emit_modal($html, $id);
+		}
+	}
+
+	private static function emit_modal($html, $id) {
+		echo HtmlGen::elem(
+			'div',
+			array(
+				'class' => 'modal',
+				'id' => $id,
+			)
+		);
+
+		echo HtmlGen::div_wrap(
+			'<span class="close">&times;</span>' . $html,
+			'modal-content'
+		);
+
+		echo '</div>';
+	}
+
 	/**
 	 * Splits up markup into logical elements. Each element starts with a '#'
 	 * character at the beginning of a line. Any subsequent lines are appended to
@@ -447,6 +479,29 @@ class Schedule {
 		);
 	}
 
+	private static function modal_button_ahref($href, $id) {
+		return HtmlGen::elem(
+			'a',
+			array(
+				'class' => 'modal_button',
+				'href' => $href,
+				'data-modal-id' => "modal-$id"
+			)
+		);
+	}
+
+	private static function add_bio_modal($id) {
+		if (isset(self::$_modals[$id])) {
+			return;
+		}
+
+		self::$_modals[$id] = sweetmo_sc_smb_bio(
+			array(),
+			$id,
+			null
+		);
+	}
+
 	// handles '#band[X] ...' markup (the [X] is optional)
 	public static function handle_band_section($section) {
 		//
@@ -493,7 +548,10 @@ class Schedule {
 		if (empty($band_data) || empty($band_data['name'])) {
 			$content .= '<b>' . esc_html('Band TBA') . '</b>';
 		} else {
-			$content .= '<b><a href="#">' . esc_html($band_data['name']);
+			self::add_bio_modal($band);
+			$content .= '<b>';
+			$content .= self::modal_button_ahref('/music', $band);
+			$content .= esc_html($band_data['name']);
 			$content .= '</a></b>';
 		}
 
@@ -503,9 +561,13 @@ class Schedule {
 		}
 
 		if (!empty($dj_data) && !empty($dj_data['name'])) {
+			self::add_bio_modal($dj);
+
 			$content .= '<br/>';
 			$content .= esc_html("Set breaks DJ'd by ");
-			$content .= '<a href="#">' . esc_html($dj_data['name']) . '</a>';
+			$content .= self::modal_button_ahref('/music', $dj);
+			$content .= esc_html($dj_data['name']);
+			$content .= '</a>';
 		}
 
 		//

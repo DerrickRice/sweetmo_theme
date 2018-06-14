@@ -17,5 +17,6 @@ Schedule::handle_sections(
 	Schedule::split_sections($schedule_markup)
 );
 Schedule::end_grid();
+Schedule::emit_new_modals();
 
 1;
