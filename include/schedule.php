@@ -39,14 +39,29 @@ class Schedule {
 	 * The header of a schedule grid. Usually indicates the beginning of the
 	 * event, such as the main dance or workshops.
 	 */
- 	public static function header($event, $venueid=null, $note=null) {
+ 	public static function header($event, $venue=null, $note=null) {
 		$title = $event;
 
-		$venueinfo = self::_venue_link_html($venueid);
-		if ($venueinfo) {
-			$title .= " at $venueinfo";
+		// Venue information (if venue was provided at all)
+		if (!empty($venue)) {
+			$venue_data = self::_get_data('venue', $venue);
+			$title .= ' at ';
+
+			if (empty($venue_data) || $venue_data['name_tba']) {
+				$title .= 'TBA';
+			} else {
+				self::add_venue_modal($venue);
+				$name = $venue_data['name'];
+				if (!empty($venue_data['shortname'])) {
+					$name = $venue_data['shortname'];
+				}
+				$title .= self::modal_button_ahref('/venues', $venue);
+				$title .= esc_html($name);
+				$title .= '</a>';
+			}
 		}
 
+		// build overall structure.
 		$html = HtmlGen::div_wrap($title, 'event');
 
 		if ($note) {
@@ -55,30 +70,6 @@ class Schedule {
 
  		echo HtmlGen::div_wrap($html, 'schedule_header');
  	}
-
-	private static function _venue_link_html($venueid) {
-		$venueid = trim($venueid);
-		if (empty($venueid)) {
-			return '';
-		}
-
-		$venue = self::_get_data('venue', $venueid);
-		if (empty($venue)) {
-			return '';
-		}
-
-		if ($venue['name_tba']) {
-			return esc_html('TBA');
-		}
-
-		$name = $venue['name'];
-		if (! empty($venue['shortname'])) {
-			$name = $venue['shortname'];
-		}
-
-		// TODO: build more interesting information
-		return esc_html($name);
-	}
 
 	public static function time(
 		$start,
@@ -487,6 +478,18 @@ class Schedule {
 				'href' => $href,
 				'data-modal-id' => "modal-$id"
 			)
+		);
+	}
+
+	private static function add_venue_modal($id) {
+		if (isset(self::$_modals[$id])) {
+			return;
+		}
+
+		self::$_modals[$id] = sweetmo_sc_smb_venue(
+			array(),
+			$id,
+			null
 		);
 	}
 
