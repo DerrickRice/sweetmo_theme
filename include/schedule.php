@@ -55,7 +55,10 @@ class Schedule {
 				if (!empty($venue_data['shortname'])) {
 					$name = $venue_data['shortname'];
 				}
-				$title .= self::modal_button_ahref('/venues', $venue);
+				$title .= self::modal_button_ahref(
+					'/venues',
+					'venue_' . $venue
+				);
 				$title .= esc_html($name);
 				$title .= '</a>';
 			}
@@ -151,15 +154,10 @@ class Schedule {
 			);
 		}
 
-		if ($data['level_tba']) {
+		if (! empty($data['tags'])) {
 			$html .= HtmlGen::div_wrap(
-				esc_html('Level TBA'),
-				array('workshop_level', 'tba')
-			);
-		} elseif (! empty($data['level'])) {
-			$html .= HtmlGen::div_wrap(
-				esc_html($data['level']),
-				'workshop_level'
+				self::tags_html($data['tags'], true),
+				'workshop_tags'
 			);
 		}
 
@@ -181,6 +179,69 @@ class Schedule {
 		);
 		echo $html;
 		echo '</div>';
+	}
+
+	/**
+	 * Generate HTML for the provided workshop tags.
+	 *
+	 * $short [boolean] If true, these tags are shown on the top level of the
+	 * workshop schedule. If false, this is within the details.
+	 */
+	private static function tags_html($tags, $short) {
+		$tag_values = explode(',', $tags);
+		$tag_data = array();
+		foreach ($tag_values as $tv) {
+			$tv = trim($tv);
+			if (empty($tv)) {
+				continue;
+			}
+			$d = self::_get_data('tags', $tv);
+			if (empty($d)) {
+				$d = array(
+					'id' => $tv,
+					'missing' => true
+				);
+			}
+			$tag_data[] = $d;
+		}
+
+		$first = true;
+		$html = '';
+		foreach ($tag_data as $td) {
+			if (!$first) {
+				$html .= ', ';
+			}
+			$first = false;
+
+			if (isset($td['missing'])) {
+				$html .= HtmlGen::elem(
+					'span',
+					array(
+						'style' => 'color:red;'
+					)
+				);
+				$html .= esc_html($td['id']);
+				$html .= '</span>';
+			} elseif ($short) {
+				$shortname = $td['name'];
+				if (! empty($td['shortname'])) {
+					$shortname = $td['shortname'];
+				}
+				$html .= esc_html($shortname);
+			} else {
+				self::add_tag_modal($td['id']);
+				$html .= self::modal_button_ahref(
+					'/workshops',
+					'tag_'.$td['id']
+				);
+				$html .= esc_html($td['name']);
+				$html .= '</a>';
+			}
+
+			$first = false;
+		}
+
+		return $html;
 	}
 
 	public static function workshop_details($group, $id) {
@@ -228,15 +289,10 @@ class Schedule {
 			);
 		}
 
-		if ($data['level_tba']) {
+		if (! empty($data['tags'])) {
 			$html .= HtmlGen::div_wrap(
-				esc_html('Level: TBA'),
-				array('workshop_level', 'tbd')
-			);
-		} elseif (! empty($data['level'])) {
-			$html .= HtmlGen::div_wrap(
-				esc_html('Level: ' . $data['level']),
-				'workshop_level'
+				self::tags_html($data['tags'], false),
+				'workshop_tags'
 			);
 		}
 
@@ -481,12 +537,28 @@ class Schedule {
 		);
 	}
 
-	private static function add_venue_modal($id) {
-		if (isset(self::$_modals[$id])) {
+	private static function add_tag_modal($id) {
+		$mid = 'tag_' . $id;
+
+		if (isset(self::$_modals[$mid])) {
 			return;
 		}
 
-		self::$_modals[$id] = sweetmo_sc_smb_venue(
+		self::$_modals[$mid] = sweetmo_sc_smb_tag(
+			array(),
+			$id,
+			null
+		);
+	}
+
+	private static function add_venue_modal($id) {
+		$mid = 'venue_' . $id;
+
+		if (isset(self::$_modals[$mid])) {
+			return;
+		}
+
+		self::$_modals[$mid] = sweetmo_sc_smb_venue(
 			array(),
 			$id,
 			null
@@ -494,11 +566,13 @@ class Schedule {
 	}
 
 	private static function add_bio_modal($id) {
-		if (isset(self::$_modals[$id])) {
+		$mid = 'bio_' . $band;
+
+		if (isset(self::$_modals[$mid])) {
 			return;
 		}
 
-		self::$_modals[$id] = sweetmo_sc_smb_bio(
+		self::$_modals[$mid] = sweetmo_sc_smb_bio(
 			array(),
 			$id,
 			null
@@ -553,7 +627,10 @@ class Schedule {
 		} else {
 			self::add_bio_modal($band);
 			$content .= '<b>';
-			$content .= self::modal_button_ahref('/music', $band);
+			$content .= self::modal_button_ahref(
+				'/music',
+				'bio_' . $band
+			);
 			$content .= esc_html($band_data['name']);
 			$content .= '</a></b>';
 		}
@@ -568,7 +645,10 @@ class Schedule {
 
 			$content .= '<br/>';
 			$content .= esc_html("Set breaks DJ'd by ");
-			$content .= self::modal_button_ahref('/music', $dj);
+			$content .= self::modal_button_ahref(
+				'/music',
+				'bio_' . $dj
+			);
 			$content .= esc_html($dj_data['name']);
 			$content .= '</a>';
 		}

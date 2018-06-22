@@ -1308,6 +1308,7 @@ p.credit {
   /* Full width */
   height: 100%;
   /* Full height */
+  box-sizing: border-box;
   overflow: auto;
   /* Enable scroll if needed */
   background-color: black;
@@ -1325,6 +1326,9 @@ p.credit {
   border: 1px solid #888;
   width: 80%;
   /* Could be more or less, depending on screen size */
+  max-width: 970px;
+  /* 10 px less than site-container */
+  box-sizing: border-box;
 }
 
 /* The Close Button */
@@ -1557,7 +1561,7 @@ p.credit {
 .schedule_grid .schedule_event .workshop_title {
   font-weight: bold;
 }
-.schedule_grid .schedule_event .workshop_level {
+.schedule_grid .schedule_event .workshop_tags {
   font-style: oblique;
 }
 .schedule_grid .schedule_event .tba {
@@ -1577,7 +1581,7 @@ p.credit {
 .schedule_grid .workshop_details .workshop_description {
   text-indent: 2em;
 }
-.schedule_grid .workshop_details .workshop_level {
+.schedule_grid .workshop_details .workshop_tags {
   font-style: oblique;
   text-indent: 2em;
 }
