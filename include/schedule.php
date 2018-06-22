@@ -566,7 +566,7 @@ class Schedule {
 	}
 
 	private static function add_bio_modal($id) {
-		$mid = 'bio_' . $band;
+		$mid = 'bio_' . $id;
 
 		if (isset(self::$_modals[$mid])) {
 			return;
