@@ -25,6 +25,20 @@ class Schedule {
 
 	public static function begin_grid($size) {
 		assert(in_array($size, self::$_supported_grid_sizes));
+
+		echo HtmlGen::elem(
+			'div',
+			array('class' => 'schedule_hint')
+		);
+		echo esc_html('Drag me!') . ' &#8596 ';
+		echo esc_html("I'm best in landscape");
+		echo HtmlGen::elem(
+			'span',
+			array('class' => 'portrait_only')
+		);
+		echo esc_html(' (Turn your phone.)');
+		echo '</span></div>';
+
 		echo HtmlGen::elem(
 			'div',
 			array('class' => "schedule_grid schedule_grid$size")

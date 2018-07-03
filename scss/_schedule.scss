@@ -1,3 +1,27 @@
+
+.schedule_hint {
+    margin: 18px 0 -18px 0;
+    color: grey;
+    font-size: 1.2rem;
+    // Hide if it's not a screen (e.g. print)
+    @media not screen {
+        display: none;
+        margin: 0;
+    }
+
+    // Hide if the device has a cursor.
+    @media all and (hover:hover) {
+        display: none;
+        margin: 0;
+    }
+
+    .portrait_only {
+        @media not all and (orientation:portrait) {
+            display: none;
+        }
+    }
+}
+
 .schedule_grid {
     display: grid;
     font-size: 1.4rem;
