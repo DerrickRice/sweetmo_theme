@@ -6,7 +6,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.8.0
+Version: 1.8.1
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -1532,9 +1532,11 @@ p.credit {
 }
 .schedule_grid .schedule_header {
   text-align: center;
-  font-weight: bold;
   grid-column: 1/-1;
   background-color: #C0C0C0;
+}
+.schedule_grid .schedule_header .event {
+  font-weight: bold;
 }
 .schedule_grid .schedule_time {
   font-weight: bold;
@@ -1590,6 +1592,10 @@ p.credit {
   padding: 5px;
   bottom: 0;
   right: 0;
+}
+
+.tv_button {
+  cursor: pointer;
 }
 
 .tv_stylize .tv_style_shader {

@@ -33,9 +33,12 @@
     /* https://css-tricks.com/stripes-css/ */
     .schedule_header {
         text-align: center;
-        font-weight: bold;
         grid-column: 1 / -1;
         background-color: #C0C0C0;
+
+        .event {
+            font-weight: bold;
+        }
     }
 
     .schedule_time {
@@ -113,6 +116,10 @@
 }
 
 // Stlylizing and TV (Toggle Visible) stuff.
+
+.tv_button {
+    cursor: pointer;
+}
 
 .tv_stylize .tv_style_shader {
     height: 1em;
