@@ -1,4 +1,5 @@
 var toggle_visible_group_info = new Object();
+var modal_open = null;
 
 function toggle_visible_update_group_info(id) {
     var current = toggle_visible_group_info[id.grp];
@@ -118,7 +119,9 @@ function modal_button_handler(event) {
     }
 
     event.preventDefault();
+    //jQuery(document.getElementById(modal_id)).css('display', 'flex');
     jQuery(document.getElementById(modal_id)).show();
+    /*global*/ modal_open = modal_id;
 }
 
 function modal_close_handler() {
@@ -127,6 +130,7 @@ function modal_close_handler() {
 
     if (element.hasClass('modal')) {
         element.hide();
+        /*global*/ modal_open = null;
         return;
     }
 
@@ -135,8 +139,17 @@ function modal_close_handler() {
         element = jQuery(parents[i]);
         if (element.hasClass('modal')) {
             element.hide();
+            /*global*/ modal_open = null;
             return;
         }
+    }
+}
+
+function modal_keydown_handler(event) {
+    if (modal_open != null && event.which == 20) {
+        event.preventDefault();
+        jQuery(document.getElementById(modal_open)).hide();
+        /*global*/ modal_open = null;
     }
 }
 
@@ -145,6 +158,7 @@ function schedule_set_up () {
     jQuery(".tv_button").click(tv_button_handler);
     jQuery(".modal_button").click(modal_button_handler);
     jQuery(".modal .close").click(modal_close_handler);
+    jQuery(".modal-wrapper").click(modal_close_handler);
 
     jQuery(".sync_scroll").parent().each(
         function(){
@@ -154,6 +168,7 @@ function schedule_set_up () {
     );
 
     jQuery(window).resize(sync_all_full);
+    jQuery(window).keydown(modal_keydown_handler);
     sync_all_full();
 }
 

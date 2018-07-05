@@ -12,12 +12,25 @@
     background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
 }
 
+.modal-wrapper {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+    min-height: 100%;
+    padding-top: 60px;
+    padding-bottom: 60px;
+    margin: 0;
+    box-sizing: border-box;
+}
+
 /* Modal Content/Box */
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto; /* 15% from the top and centered */
+    margin: 0 auto;
     padding: 20px;
     border: 1px solid #888;
+    box-shadow: 0 0 60px 15px rgba(0, 0, 0, 0.9);
     width: 80%; /* Could be more or less, depending on screen size */
     max-width: 970px; /* 10 px less than site-container */
     box-sizing: border-box;

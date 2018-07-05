@@ -400,12 +400,17 @@ class Schedule {
 			)
 		);
 
+		echo HtmlGen::elem(
+			'div',
+			array('class' => 'modal-wrapper')
+		);
+
 		echo HtmlGen::div_wrap(
 			'<span class="close">&times;</span>' . $html,
 			'modal-content'
 		);
 
-		echo '</div>';
+		echo '</div></div>';
 	}
 
 	/**
