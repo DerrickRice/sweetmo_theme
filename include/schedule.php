@@ -71,7 +71,7 @@ class Schedule {
 				}
 				$title .= self::modal_button_ahref(
 					'/venues',
-					'venue_' . $venue
+					self::get_modal_id('venue', array($venue))
 				);
 				$title .= esc_html($name);
 				$title .= '</a>';
@@ -143,8 +143,10 @@ class Schedule {
 		$data = self::_get_data('class', $id);
 		$html = '';
 
+		$tba = $data['title_tba'] || empty($data['title']);
+
 		// Workshop title
-		if ($data['title_tba'] || empty($data['title'])) {
+		if ($tba) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Class TBA'),
 				array('workshop_title', 'tba')
@@ -156,19 +158,14 @@ class Schedule {
 			);
 		}
 
-		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
-			$html .= HtmlGen::div_wrap(
-				esc_html('Instructor TBA'),
-				array('workshop_teacher', 'tba')
-			);
-		} else {
+	 	if (! $tba && ! empty($data['teacher_text'])) {
 			$html .= HtmlGen::div_wrap(
 				esc_html($data['teacher_text']),
 				'workshop_teacher'
 			);
 		}
 
-		if (! empty($data['tags'])) {
+		if (! $tba && ! empty($data['tags'])) {
 			$html .= HtmlGen::div_wrap(
 				self::tags_html($data['tags'], true),
 				'workshop_tags'
@@ -246,7 +243,7 @@ class Schedule {
 				self::add_tag_modal($td['id']);
 				$html .= self::modal_button_ahref(
 					'/workshops',
-					'tag_'.$td['id']
+					self::get_modal_id('tag', array($td['id']))
 				);
 				$html .= esc_html($td['name']);
 				$html .= '</a>';
@@ -262,8 +259,10 @@ class Schedule {
 		$data = self::_get_data('class', $id);
 		$html = '';
 
+		$tba = $data['title_tba'] || empty($data['title']);
+
 		// Workshop title
-		if ($data['title_tba'] || empty($data['title'])) {
+		if ($tba) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Class TBA'),
 				array('workshop_title', 'tba')
@@ -277,21 +276,40 @@ class Schedule {
 
 		$html .= esc_html(' with ');
 
-		if ($data['teacher_text_tba'] || empty($data['teacher_text'])) {
-			$html .= HtmlGen::div_wrap(
-				esc_html('Instructor TBA'),
-				array('workshop_teacher', 'tbd')
+		if (! $tba && ! empty($data['teacher_text'])) {
+			$html .= HtmlGen::elem(
+				'div',
+				array('class' => 'workshop_teacher')
 			);
-		} else {
-			$html .= HtmlGen::div_wrap(
-				esc_html($data['teacher_text']),
-				'workshop_teacher'
-			);
+
+			$teachers = array();
+			if (!empty($data['teacher_tags'])) {
+				$tt_values = explode(',', $data['teacher_tags']);
+				foreach ($tt_values as $tt) {
+					$tt = trim($tt);
+					if (!empty($tt)) {
+						$teachers[] = $tt;
+					}
+				}
+			}
+
+			if (empty($teachers)) {
+				$html .= $data['teacher_text'];
+			} else {
+				self::add_bio_modal($teachers);
+				$html .= self::modal_button_ahref(
+					'/instructors',
+					self::get_modal_id('bio', $teachers)
+				);
+				$html .= $data['teacher_text'];
+				$html .= '</a>';
+			}
+			$html .= '</div>';
 		}
 
 		$html = HtmlGen::div_wrap($html, 'workshop_details_top');
 
-		if ($data['description_tba'] || empty($data['description'])) {
+		if ($tba || empty($data['description'])) {
 			$html .= HtmlGen::div_wrap(
 				esc_html('Description TBA'),
 				array('workshop_description', 'tbd')
@@ -303,7 +321,7 @@ class Schedule {
 			);
 		}
 
-		if (! empty($data['tags'])) {
+		if (! $tba && ! empty($data['tags'])) {
 			$html .= HtmlGen::div_wrap(
 				self::tags_html($data['tags'], false),
 				'workshop_tags'
@@ -552,7 +570,7 @@ class Schedule {
 	}
 
 	private static function add_tag_modal($id) {
-		$mid = 'tag_' . $id;
+		$mid = self::get_modal_id('tag', array($id));
 
 		if (isset(self::$_modals[$mid])) {
 			return;
@@ -566,7 +584,7 @@ class Schedule {
 	}
 
 	private static function add_venue_modal($id) {
-		$mid = 'venue_' . $id;
+		$mid = self::get_modal_id('venue', array($id));
 
 		if (isset(self::$_modals[$mid])) {
 			return;
@@ -579,18 +597,42 @@ class Schedule {
 		);
 	}
 
-	private static function add_bio_modal($id) {
-		$mid = 'bio_' . $id;
+	private static function get_modal_id($type, $ids) {
+		$mid = '';
+		foreach ($ids as $id) {
+			$mid .= '_' . $id;
+		}
+		return $mid;
+	}
+
+	/* $ids can be either a scalar (string ID) or array (array of String IDs) */
+	private static function add_bio_modal($ids) {
+		if (!is_array($ids)) {
+			$ids = array($ids);
+		}
+
+		$mid = self::get_modal_id('bio', $ids);
 
 		if (isset(self::$_modals[$mid])) {
 			return;
 		}
 
-		self::$_modals[$mid] = sweetmo_sc_smb_bio(
-			array(),
-			$id,
-			null
-		);
+		$content = '';
+		$first = true;
+
+		foreach ($ids as $id) {
+			if (! $first) {
+				$content .= '<hr/>';
+			}
+			$first = false;
+			$content .= sweetmo_sc_smb_bio(
+				array(),
+				$id,
+				null
+			);
+		}
+
+		self::$_modals[$mid] = $content;
 	}
 
 	// handles '#band[X] ...' markup (the [X] is optional)
@@ -643,7 +685,7 @@ class Schedule {
 			$content .= '<b>';
 			$content .= self::modal_button_ahref(
 				'/music',
-				'bio_' . $band
+				self::get_modal_id('bio', array($band))
 			);
 			$content .= esc_html($band_data['name']);
 			$content .= '</a></b>';
@@ -661,7 +703,7 @@ class Schedule {
 			$content .= esc_html("Set breaks DJ'd by ");
 			$content .= self::modal_button_ahref(
 				'/music',
-				'bio_' . $dj
+				self::get_modal_id('bio', array($band))
 			);
 			$content .= esc_html($dj_data['name']);
 			$content .= '</a>';
