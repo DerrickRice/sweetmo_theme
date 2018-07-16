@@ -466,6 +466,8 @@ class Schedule {
 				self::handle_classes_section($section, $group);
 			} elseif ($sc == 'b' && strncmp($section, '#band', 5) == 0) {
 				self::handle_band_section($section);
+			} elseif ($sc == 'd' && strncmp($section, '#dj', 3) == 0) {
+				self::handle_dj_section($section);
 			} elseif ($sc == 'p' && strncmp($section, '#performance', 12) == 0) {
 				self::handle_performance_section($section);
 			} elseif ($sc == 'e' && strncmp($section, '#event', 6) == 0) {
@@ -704,14 +706,93 @@ class Schedule {
 		if (!empty($dj_data) && !empty($dj_data['name'])) {
 			self::add_bio_modal($dj);
 
-			$content .= '<br/>';
+			$content .= HtmlGen::elem(
+				'div',
+				array('class' => 'cblock')
+			);
 			$content .= esc_html("Set breaks DJ'd by ");
 			$content .= self::modal_button_ahref(
 				'/music',
-				self::get_modal_id('bio', array($band))
+				self::get_modal_id('bio', array($dj))
 			);
-			$content .= esc_html($dj_data['name']);
+
+			$name = $dj_data['name'];
+			if (!empty($dj_data['shortname'])) {
+				$name = $dj_data['shortname'];
+			}
+			$content .= esc_html($name);
+
 			$content .= '</a>';
+			$content .= "</div>";
+		}
+
+		//
+		// emit!
+		//
+		echo HtmlGen::div_wrap(
+			$content,
+			array("schedule_event", self::_span_class($span))
+		);
+}
+
+	// handles '#dj[X] ...' markup (the [X] is optional)
+	public static function handle_dj_section($section) {
+		//
+		// remove '#dj' and look for [$span]
+		//
+		$section = trim(substr($section, 3));
+		$span = '1';
+
+		if ($section[0] == '[') {
+			$parts = explode(']', $section);
+			if (count($parts) > 1) {
+				$span = substr($parts[0], 1);
+				$section = trim($parts[1]);
+			}
+		}
+
+		//
+		// parse $section for '{$dj} {$title}'
+		// only the band is required.
+		//
+		$parts = preg_split('/\s+/', $section, 2);
+		$dj = trim($parts[0]);
+		$description = isset($parts[1]) ? $parts[1] : null;
+
+		$dj_data = self::_get_data('person', $dj);
+
+		//
+		// build the content out of $title, $band_data, and $dj_data
+		//
+		$content = '';
+		if (empty($dj_data) || empty($dj_data['name'])) {
+			$content .= esc_html("DJ'd music by TBA");
+		} else {
+			self::add_bio_modal($dj);
+			$content .= HtmlGen::elem(
+				'div',
+				array('class' => 'cblock')
+			);
+			$content .= esc_html("DJ'd music by ");
+			$content .= self::modal_button_ahref(
+				'/music',
+				self::get_modal_id('bio', array($dj))
+			);
+			$name = $dj_data['name'];
+			if (!empty($dj_data['shortname'])) {
+				$name = $dj_data['shortname'];
+			}
+			$content .= esc_html($name);
+			$content .= '</a></div>';
+		}
+
+		if (!empty($description)) {
+			$content .= HtmlGen::elem(
+				'div',
+				array('class' => 'cblock')
+			);
+			$content .= self::maybe_esc_html(trim($description));
+			$content .= '</div>';
 		}
 
 		//
