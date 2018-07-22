@@ -6,7 +6,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.10.1
+Version: 1.10.2
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,6 +14,20 @@ Template: omega
 */
 /* http://paletton.com/palette.php?uid=13d0u0kaVz84jP27qHbeJtFiHpX */
 /* Responsive design and print-friendly pages */
+@media print {
+  .noprint {
+    display: none !important;
+  }
+}
+
+.pagebreak {
+  page-break-after: always;
+}
+
+.nopagebreak {
+  page-break-inside: avoid;
+}
+
 /*! normalize.css v8.0.0 | MIT License | github.com/necolas/normalize.css */
 /* Document
    ========================================================================== */
@@ -397,6 +411,11 @@ html {
   font-size: 62.5%;
   /* 10px browser default */
 }
+@media print {
+  html {
+    font-size: 50%;
+  }
+}
 
 body {
   font-family: "Open Sans", sans-serif;
@@ -412,17 +431,30 @@ body {
     padding-top: 0px;
   }
 }
+@media print {
+  body {
+    padding-top: 0px;
+    line-height: 1.4;
+  }
+}
 
 /* Typographical Elements */
 a {
   color: #368376;
   text-decoration: underline;
 }
+@media print {
+  a {
+    color: black;
+  }
+}
 
-a:hover,
+@media not print {
+  a:hover,
 a:focus {
-  color: #00342B;
-  background-color: #BFDCD7;
+    color: #00342B;
+    background-color: #BFDCD7;
+  }
 }
 
 p {
@@ -507,6 +539,7 @@ h4,
 h5,
 h6 {
   color: #00342B;
+  page-break-after: avoid;
   font-family: "BentonSansExtraComp-Regular", Arial;
   font-weight: normal;
   line-height: 1.4;
@@ -514,46 +547,71 @@ h6 {
   margin-bottom: 22px;
   padding: 0;
 }
+@media print {
+  h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: black;
+    margin-bottom: 0.5em;
+  }
+}
 
 h1 {
-  padding: 0 0 0 6px;
-  background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
   font-size: 36px;
-  border-left: 2px solid #368376;
-  position: relative;
-  margin-top: 2px;
+  font-size: 3.6rem;
 }
-h1:before {
-  content: " ";
-  position: absolute;
-  left: -2px;
-  top: 0;
-  height: 2px;
-  width: 100%;
-  max-width: 4em;
-  background-color: #368376;
+@media not print {
+  h1 {
+    padding: 0 0 0 6px;
+    background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
+    border-left: 2px solid #368376;
+    position: relative;
+    margin-top: 2px;
+  }
+  h1:before {
+    content: " ";
+    position: absolute;
+    left: -2px;
+    top: 0;
+    height: 2px;
+    width: 100%;
+    max-width: 4em;
+    background-color: #368376;
+  }
 }
 
 h2 {
   font-size: 30px;
-  padding: 0 0 0 6px;
-  background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
+  font-size: 3rem;
+}
+@media not print {
+  h2 {
+    padding: 0 0 0 6px;
+    background: linear-gradient(to right, #BFDCD7 0%, rgba(191, 220, 215, 0) 4em);
+  }
 }
 
 h3 {
   font-size: 24px;
+  font-size: 2.4rem;
 }
 
 h4 {
   font-size: 20px;
+  font-size: 2rem;
 }
 
 h5 {
   font-size: 18px;
+  font-size: 1.8rem;
 }
 
 h6 {
   font-size: 16px;
+  font-size: 1.6rem;
 }
 
 /* Objects
@@ -659,6 +717,18 @@ input[type=search]::-webkit-search-results-button {
   -moz-box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
   box-shadow: 0 0 50px rgba(0, 0, 0, 0.1);
 }
+@media print {
+  .site-container {
+    position: static;
+    width: 100%;
+    max-width: unset;
+    background: #ffffff;
+    margin: 0;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
+  }
+}
 
 .site-inner {
   clear: both;
@@ -668,6 +738,11 @@ input[type=search]::-webkit-search-results-button {
 @media only screen and (max-width: 1023px) {
   .site-inner {
     margin: 0.75em;
+  }
+}
+@media print {
+  .site-inner {
+    margin: 0px;
   }
 }
 
@@ -857,8 +932,12 @@ Site Header
 .site-header {
   background: none repeat scroll 0 0 #fff;
 }
+@media print {
+  .site-header {
+    display: none !important;
+  }
+}
 
-.site-title,
 .site-intro {
   font-family: "BentonSansExtraComp-Regular", Arial;
   text-transform: uppercase;
@@ -872,18 +951,22 @@ Site Header
   display: block;
   color: #333;
 }
-
-@media only screen and (max-width: 1023px) {
-  .site-title {
-    text-align: center;
-    margin-bottom: 5px;
+@media print {
+  .header-image {
+    display: none !important;
   }
 }
 
-.site-title a,
-.site-title a:hover {
-  color: #333;
-  text-decoration: none;
+@media not print {
+  .header-title {
+    display: none;
+  }
+}
+@media print {
+  .header-title {
+    display: block;
+    text-align: center;
+  }
 }
 
 @media only screen and (max-width: 1023px) {
@@ -995,12 +1078,16 @@ Site Header
   }
 }
 /* Entries */
-.entry {
-  margin-bottom: 50px;
+@media not print {
+  .entry {
+    margin-bottom: 50px;
+  }
 }
 
-.entry:last-child {
-  margin-bottom: 30px;
+@media not print {
+  .entry:last-child {
+    margin-bottom: 30px;
+  }
 }
 
 .entry-content {
@@ -1266,6 +1353,13 @@ li.comment ol {
     padding: 24px 0;
   }
 }
+@media print {
+  .site-footer {
+    color: #000;
+    background: #fff;
+    padding: 5px 0;
+  }
+}
 
 .site-footer p {
   margin: 0;
@@ -1526,6 +1620,8 @@ p.credit {
   margin: 18px 0 -18px 0;
   color: grey;
   font-size: 1.2rem;
+  page-break-after: avoid;
+  page-break-inside: avoid;
 }
 @media not screen {
   .schedule_hint {
@@ -1548,9 +1644,13 @@ p.credit {
 .schedule_grid {
   display: grid;
   font-size: 1.4rem;
-  margin: 22px 0;
+  border-color: grey;
+  border-width: 1px 1px 0 0;
+  border-style: solid;
+  margin: 0 0 22px 0;
   background-color: #fff;
   overflow-x: auto;
+  page-break-inside: avoid;
   /* https://css-tricks.com/stripes-css/ */
 }
 .schedule_grid.schedule_grid1 {
@@ -1569,8 +1669,16 @@ p.credit {
   grid-column: 1/-1;
 }
 .schedule_grid > div {
-  border: 1px solid grey;
+  /* border: 1px solid grey; */
+  border-color: grey;
+  border-width: 0 0 1px 1px;
+  border-style: solid;
   padding: 5px 8px;
+}
+@media print {
+  .schedule_grid > div {
+    padding: 2px;
+  }
 }
 .schedule_grid .schedule_header {
   text-align: center;
@@ -1605,11 +1713,33 @@ p.credit {
 .schedule_grid .schedule_event .workshop_title {
   font-weight: bold;
 }
+@media print {
+  .schedule_grid .schedule_event .workshop_teacher {
+    font-size: 10px;
+    font-size: 1.25rem;
+  }
+}
 .schedule_grid .schedule_event .workshop_tags {
   font-style: oblique;
 }
+@media print {
+  .schedule_grid .schedule_event .workshop_tags {
+    color: #AAAAAA;
+    font-size: 10px;
+    font-size: 1.25rem;
+  }
+}
 .schedule_grid .schedule_event .tba {
   color: #AAAAAA;
+}
+.schedule_grid .schedule_event .workshop_description {
+  font-size: 8px;
+  font-size: 1rem;
+}
+@media not print {
+  .schedule_grid .schedule_event .workshop_description {
+    display: none;
+  }
 }
 .schedule_grid .workshop_details {
   box-sizing: border-box;

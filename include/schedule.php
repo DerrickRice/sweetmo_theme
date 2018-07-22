@@ -172,6 +172,18 @@ class Schedule {
 			);
 		}
 
+		if ($tba || empty($data['description'])) {
+			$html .= HtmlGen::div_wrap(
+				esc_html('Description TBA'),
+				array('workshop_description', 'tbd')
+			);
+		} else {
+			$html .= HtmlGen::div_wrap(
+				esc_html($data['description']),
+				'workshop_description'
+			);
+		}
+
 		$html .= HtmlGen::div_wrap('', 'tv_style_shader');
 
 		$classes = array(

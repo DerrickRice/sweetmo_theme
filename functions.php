@@ -53,6 +53,7 @@ function sweetmo_intro() {
 		$out .= 'src="' . esc_url($img_src) . '" ';
 		$out .= 'alt="' . esc_attr($title) . '" ';
 		$out .= '></img>';
+		$out .= '<div class="header-title">' . esc_html($title) . '</div>';
 	} else {
 		$out .= esc_html($title);
 	}

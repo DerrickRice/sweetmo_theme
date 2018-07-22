@@ -3,6 +3,9 @@
     margin: 18px 0 -18px 0;
     color: grey;
     font-size: 1.2rem;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+
     // Hide if it's not a screen (e.g. print)
     @media not screen {
         display: none;
@@ -25,9 +28,13 @@
 .schedule_grid {
     display: grid;
     font-size: 1.4rem;
-    margin: 22px 0;
+    border-color: grey;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0 0 22px 0;
     background-color: $light-background;
     overflow-x: auto;
+    page-break-inside: avoid;
 
     &.schedule_grid1 {
         grid-template-columns: min-content 1fr;
@@ -50,8 +57,14 @@
     }
 
     > div {
-        border: 1px solid grey;
+        /* border: 1px solid grey; */
+        border-color: grey;
+        border-width: 0 0 1px 1px;
+        border-style: solid;
         padding: 5px 8px;
+        @include print {
+            padding: 2px;
+        }
     }
 
     /* https://css-tricks.com/stripes-css/ */
@@ -96,20 +109,36 @@
             font-weight: bold;
         }
 
-        // .schedule_event .workshop_teacher {}
+        .workshop_teacher {
+            @include print {
+                font-size: 10px;
+                font-size: 1.25rem;
+            }
+        }
 
         .workshop_tags {
             font-style: oblique;
+            @include print {
+                color: #AAAAAA;
+                font-size: 10px;
+                font-size: 1.25rem;
+            }
         }
 
         .tba {
             color: #AAAAAA;
         }
+
+        .workshop_description {
+            @include notprint {
+                display: none;
+            }
+            font-size: 8px;
+            font-size: 1rem;
+        }
     }
 
     .workshop_details {
-        //position: sticky;
-        //left: 0px;
         box-sizing: border-box;
         position: relative;
         left: 0px;
