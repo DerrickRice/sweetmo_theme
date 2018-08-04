@@ -179,7 +179,7 @@ class Schedule {
 			);
 		} else {
 			$html .= HtmlGen::div_wrap(
-				esc_html($data['description']),
+				/* richtext */ $data['description'],
 				'workshop_description'
 			);
 		}
@@ -328,7 +328,7 @@ class Schedule {
 			);
 		} else {
 			$html .= HtmlGen::div_wrap(
-				esc_html($data['description']),
+				/* richtext */ $data['description'],
 				'workshop_description'
 			);
 		}

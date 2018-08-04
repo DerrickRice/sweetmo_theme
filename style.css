@@ -6,7 +6,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.10.2
+Version: 1.10.3
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -1735,11 +1735,19 @@ p.credit {
 .schedule_grid .schedule_event .workshop_description {
   font-size: 8px;
   font-size: 1rem;
+  text-align: left;
+  padding: 0 3px;
 }
 @media not print {
   .schedule_grid .schedule_event .workshop_description {
     display: none;
   }
+}
+.schedule_grid .schedule_event .workshop_description p {
+  margin: 0.25em 0 0 0;
+}
+.schedule_grid .schedule_event .workshop_description p:first-child {
+  margin-top: 0;
 }
 .schedule_grid .workshop_details {
   box-sizing: border-box;
@@ -1754,6 +1762,12 @@ p.credit {
 }
 .schedule_grid .workshop_details .workshop_description {
   text-indent: 2em;
+}
+.schedule_grid .workshop_details .workshop_description p {
+  margin: 0.25em 0 0 0;
+}
+.schedule_grid .workshop_details .workshop_description p:first-child {
+  margin-top: 0;
 }
 .schedule_grid .workshop_details .workshop_tags {
   font-style: oblique;
