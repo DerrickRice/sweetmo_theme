@@ -282,7 +282,7 @@ class Schedule {
 		} else {
 			$html .= HtmlGen::div_wrap(
 				esc_html($data['title']),
-				'workshop_title'
+				'workshop_title', 'astyle'
 			);
 		}
 

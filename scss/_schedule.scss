@@ -107,6 +107,15 @@
 
         .workshop_title {
             font-weight: bold;
+            @include notprint {
+    	       color: $darkest-color;
+               text-decoration: underline;
+
+               &:hover, &:focus {
+                  color: $dark-background;
+                  background-color: $lightest-color;
+               }
+            }
         }
 
         .workshop_teacher {
