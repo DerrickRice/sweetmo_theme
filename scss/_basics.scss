@@ -21,6 +21,7 @@ body {
     @include print {
         padding-top: 0px;
         line-height: 1.4;
+    	background-color: #ffffff;
     }
 }
 
