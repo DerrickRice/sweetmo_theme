@@ -1,0 +1,206 @@
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+<!-- https://docs.angularjs.org/misc/downloading -->
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.js"></script>
+<!-- https://getbootstrap.com/ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+<div class="accordion" id="regWorkflow" ng-app="regApp" ng-controller="RegistrationController">
+  <div class="card">
+    <div class="card-header" id="headingYou" data-toggle="collapse" data-target="#collapseYou" aria-expanded="true" aria-controls="collapseYou">
+      <h3>You</h3>
+    </div>
+    <div id="collapseYou" class="collapse show" aria-labelledby="headingYou" data-parent="#regWorkflow">
+      <div class="card-body">
+        <input type="text" class="form-control" ng-model="input.user.firstname" id="firstnameField" placeholder="First Name" required />
+        <input type="text" class="form-control" ng-model="input.user.lastname" id="lastnameField" placeholder="Last Name" required />
+        <div class="form-group">
+          <input type="email" class="form-control" ng-model="input.user.email" id="emailField" aria-describedby="emailHelp" placeholder="Email Address" required />
+          <small id="emailHelp" class="form-text text-muted">For your receipt and updates about the event.</small>
+        </div>
+        <input type="text" class="form-control" ng-model="input.user.scene" id="sceneField" placeholder="Home Scene (optional)" />
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapsePass" aria-controls="collapsePass">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingPass" data-toggle="collapse" data-target="#collapsePass" aria-expanded="false" aria-controls="collapsePass">
+      <h3>Pass</h3>
+    </div>
+    <div id="collapsePass" class="collapse" aria-labelledby="headingPass" data-parent="#regWorkflow">
+      <div class="card-body">
+        <div>[smb_include]reg.pass.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="passSelect">Which event pass would you like?</label><br/>
+          <select ng-model="input.pass.type" required>
+            <option ng-repeat="pass_iter in data.passes" ng-value="pass_iter.id">{{pass_iter.longname}}</option>
+          </select>
+        </div>
+        <div ng-repeat="iter_pass in data.passes" ng-show="input.pass.type==iter_pass.id">
+          <ng-bind-html ng-bind-html="iter_pass.content"></ng-bind-html>
+        </div>
+        <div ng-show="NeedCode()">
+          <div class="form-group">
+            <input type="text" class="form-control" ng-model="input.pass.code" id="passCodeField" aria-describedby="passCodeHelp" placeholder="Approval Code" ng-required="" />
+            <small id="passCodeHelp" class="form-text text-muted">See the description, above, for the code.</small>
+          </div>
+        </div>
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseComp" aria-controls="collapseComp">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingComp" data-toggle="collapse" data-target="#collapseComp" aria-expanded="false" aria-controls="collapseComp">
+      <h3>Comp</h3>
+    </div>
+    <div id="collapseComp" class="collapse" aria-labelledby="headingComp" data-parent="#regWorkflow">
+      <div class="card-body">
+        <div>[smb_include]reg.comp.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="compSelect">Which competition would you like?</label><br/>
+          <select ng-model="input.comp.type" required>
+            <option ng-repeat="comp_iter in data.comps" ng-value="comp_iter.id">{{comp_iter.longname}}</option>
+          </select>
+        </div>
+        <div ng-repeat="iter_comp in data.comps" ng-show="comp.type==iter_comp.id">
+          <ng-bind-html ng-bind-html="iter_comp.content"></ng-bind-html>
+        </div>
+        <div class="form-group" ng-show="input.comp.type && input.comp.type != 'none'">
+          <label for="compRoleSelect">Which event pass would you like?</label><br/>
+          <select ng-model="input.comp.role" ng-required="input.comp.type && input.comp.type != 'none'">
+            <option ng-value="follow">Follow</option>
+            <option ng-value="follow">Lead</option>
+          </select>
+        </div>
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingSwag" data-toggle="collapse" data-target="#collapseSwag" aria-expanded="false" aria-controls="collapseSwag">
+      <h3>Swag</h3>
+    </div>
+    <div id="collapseSwag" class="collapse" aria-labelledby="headingSwag" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseFood" aria-controls="collapseFood">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingFood" data-toggle="collapse" data-target="#collapseFood" aria-expanded="false" aria-controls="collapseFood">
+      <h3>Food</h3>
+    </div>
+    <div id="collapseFood" class="collapse" aria-labelledby="headingFood" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingHouse" data-toggle="collapse" data-target="#collapseHouse" aria-expanded="false" aria-controls="collapseHouse">
+      <h3>House</h3>
+    </div>
+    <div id="collapseHouse" class="collapse" aria-labelledby="headingHouse" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingVolunteer" data-toggle="collapse" data-target="#collapseVolunteer" aria-expanded="false" aria-controls="collapseVolunteer">
+      <h3>Volunteer</h3>
+    </div>
+    <div id="collapseVolunteer" class="collapse" aria-labelledby="headingVolunteer" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingPolicies" data-toggle="collapse" data-target="#collapsePolicies" aria-expanded="false" aria-controls="collapsePolicies">
+      <h3>Policies</h3>
+    </div>
+    <div id="collapsePolicies" class="collapse" aria-labelledby="headingPolicies" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingComplete" data-toggle="collapse" data-target="#collapseComplete" aria-expanded="false" aria-controls="collapseComplete">
+      <h3>Complete</h3>
+    </div>
+    <div id="collapseComplete" class="collapse" aria-labelledby="headingComplete" data-parent="#regWorkflow">
+      <div class="card-body">
+        This is where the event pass form information would go
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+
+var passes = [mdsc_json_list id="passes" filter_by="published" order_by="sort_id"][/mdsc_json_list];
+
+var comps = [
+  {
+    id: "none",
+    longname: "None",
+    content: "Description",
+    price: 0.00
+  },
+  {
+    id: "advancedmm",
+    longname: "Advanced M&M",
+    content: "Description",
+    price: 5.00
+  },
+]
+
+var regApp = angular.module('regApp',[]);
+
+regApp.controller('RegistrationController', ['$scope', '$sce', function($scope, $sce) {
+  $scope.input = {}
+  $scope.data = {}
+  $scope.data.passes = jQuery.extend(true, [], passes);
+
+  jQuery.each($scope.data.passes, function(index, value) {
+    value.content = $sce.trustAsHtml(value.content);
+  });
+
+  $scope.data.comps = jQuery.extend(true, [], comps);
+
+  jQuery.each($scope.data.comps, function(index, value) {
+    value.content = $sce.trustAsHtml(value.content);
+  });
+
+  $scope.NeedCode = function() {
+    if (!$scope.input.pass || !$scope.input.pass.type) {
+      return false;
+    }
+
+    var match = jQuery.grep($scope.data.passes, function(value, index) {
+      return value.id == $scope.input.pass.type && value.code.length > 0;
+    });
+
+    return match.length > 0;
+  };
+}]);
+
+</script>
+
+
