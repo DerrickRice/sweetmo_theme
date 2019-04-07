@@ -2,14 +2,18 @@
 <!-- https://docs.angularjs.org/misc/downloading -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.js"></script>
+<!-- https://github.com/gsklee/ngStorage -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ngStorage/0.3.11/ngStorage.min.js"></script>
 <!-- https://getbootstrap.com/ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <div class="accordion" id="regWorkflow" ng-app="regApp" ng-controller="RegistrationController">
+  <div class="btn btn-warning" ng-click="Reset()">Clear All Fields</div>
+
   <div class="card">
     <div class="card-header" id="headingYou" data-toggle="collapse" data-target="#collapseYou" aria-expanded="true" aria-controls="collapseYou">
-      <h3>You</h3>
+      <h3>About You</h3>
     </div>
     <div id="collapseYou" class="collapse show" aria-labelledby="headingYou" data-parent="#regWorkflow">
       <div class="card-body">
@@ -27,19 +31,19 @@
 
   <div class="card">
     <div class="card-header" id="headingPass" data-toggle="collapse" data-target="#collapsePass" aria-expanded="false" aria-controls="collapsePass">
-      <h3>Pass</h3>
+      <h3>Event Pass{{PassTitle()}}</h3>
     </div>
     <div id="collapsePass" class="collapse" aria-labelledby="headingPass" data-parent="#regWorkflow">
       <div class="card-body">
         <div>[smb_include]reg.pass.top[/smb_include]</div>
         <div class="form-group">
           <label for="passSelect">Which event pass would you like?</label><br/>
-          <select ng-model="input.pass.type" required>
-            <option ng-repeat="pass_iter in data.passes" ng-value="pass_iter.id">{{pass_iter.longname}}</option>
+          <select ng-model="input.pass.type" required id="passSelect">
+            <option ng-repeat="pass_iter in data.passes" ng-value="pass_iter.id">{{pass_iter.longname}} $ {{pass_iter.price}}</option>
           </select>
         </div>
-        <div ng-repeat="iter_pass in data.passes" ng-show="input.pass.type==iter_pass.id">
-          <ng-bind-html ng-bind-html="iter_pass.content"></ng-bind-html>
+        <div ng-repeat="pass_iter in data.passes" ng-show="input.pass.type==pass_iter.id">
+          <ng-bind-html ng-bind-html="pass_iter.content"></ng-bind-html>
         </div>
         <div ng-show="NeedCode()">
           <div class="form-group">
@@ -54,25 +58,25 @@
 
   <div class="card">
     <div class="card-header" id="headingComp" data-toggle="collapse" data-target="#collapseComp" aria-expanded="false" aria-controls="collapseComp">
-      <h3>Comp</h3>
+      <h3>Competition{{CompTitle()}}</h3>
     </div>
     <div id="collapseComp" class="collapse" aria-labelledby="headingComp" data-parent="#regWorkflow">
       <div class="card-body">
         <div>[smb_include]reg.comp.top[/smb_include]</div>
         <div class="form-group">
           <label for="compSelect">Which competition would you like?</label><br/>
-          <select ng-model="input.comp.type" required>
-            <option ng-repeat="comp_iter in data.comps" ng-value="comp_iter.id">{{comp_iter.longname}}</option>
+          <select ng-model="input.comp.type" required id="compSelect">
+            <option ng-repeat="comp_iter in data.comps" ng-value="comp_iter.id">{{comp_iter.longname}} $ {{comp_iter.price}}</option>
           </select>
         </div>
-        <div ng-repeat="iter_comp in data.comps" ng-show="comp.type==iter_comp.id">
-          <ng-bind-html ng-bind-html="iter_comp.content"></ng-bind-html>
+        <div ng-repeat="comp_iter in data.comps" ng-show="input.comp.type==comp_iter.id">
+          <ng-bind-html ng-bind-html="comp_iter.content"></ng-bind-html>
         </div>
         <div class="form-group" ng-show="input.comp.type && input.comp.type != 'none'">
-          <label for="compRoleSelect">Which event pass would you like?</label><br/>
-          <select ng-model="input.comp.role" ng-required="input.comp.type && input.comp.type != 'none'">
-            <option ng-value="follow">Follow</option>
-            <option ng-value="follow">Lead</option>
+          <label for="compRoleSelect">Which role will you compete as?</label><br/>
+          <select ng-model="input.comp.role" id="compRoleSelect" ng-required="input.comp.type && input.comp.type != 'none'">
+            <option value="follow">Follow</option>
+            <option value="lead">Lead</option>
           </select>
         </div>
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
@@ -82,23 +86,49 @@
 
   <div class="card">
     <div class="card-header" id="headingSwag" data-toggle="collapse" data-target="#collapseSwag" aria-expanded="false" aria-controls="collapseSwag">
-      <h3>Swag</h3>
+      <h3>Shirt{{ShirtTitle()}}</h3>
     </div>
     <div id="collapseSwag" class="collapse" aria-labelledby="headingSwag" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div>[smb_include]reg.shirt.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="shirtSelect">Would you like a T-Shirt?</label><br/>
+          <select ng-model="input.shirt.type" required id="shirtSelect">
+            <option ng-repeat="shirt_iter in data.shirts" ng-value="shirt_iter.id">{{shirt_iter.longname}} $ {{shirt_iter.price}}</option>
+          </select>
+        </div>
+        <div ng-repeat="shirt_iter in data.shirts" ng-show="input.shirt.type==shirt_iter.id">
+          <ng-bind-html ng-bind-html="shirt_iter.content"></ng-bind-html>
+        </div>
+        <div class="form-group" ng-show="input.shirt.type && input.shirt.type != 'none'">
+          <label for="shirtSizeSelect">Which size?</label><br/>
+          <select
+              ng-model="input.shirt.size"
+              ng-required="input.shirt.type && input.shirt.type != 'none'">
+            <option ng-value="sz" ng-repeat="sz in ShirtSizes()">{{sz}}</option>
+          </select>
+        </div>
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseFood" aria-controls="collapseFood">Next</div>
       </div>
     </div>
   </div>
 
   <div class="card">
+    <!-- TODO -->
     <div class="card-header" id="headingFood" data-toggle="collapse" data-target="#collapseFood" aria-expanded="false" aria-controls="collapseFood">
-      <h3>Food</h3>
+      <h3>Sunday Dinner{{FoodTitle()}}</h3>
     </div>
     <div id="collapseFood" class="collapse" aria-labelledby="headingFood" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div>[smb_include]reg.food.top[/smb_include]</div>
+        <div class="form-group">
+          <select ng-model="input.food.type" required id="foodSelect">
+            <option ng-repeat="food_iter in data.food" ng-value="food_iter.id">{{food_iter.longname}} $ {{food_iter.price}}</option>
+          </select>
+        </div>
+        <div ng-repeat="food_iter in data.food" ng-show="input.food.type==food_iter.id">
+          <ng-bind-html ng-bind-html="pass_iter.content"></ng-bind-html>
+        </div>
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
       </div>
     </div>
@@ -106,11 +136,181 @@
 
   <div class="card">
     <div class="card-header" id="headingHouse" data-toggle="collapse" data-target="#collapseHouse" aria-expanded="false" aria-controls="collapseHouse">
-      <h3>House</h3>
+      <h3>Housing{{HouseTitle()}}</h3>
     </div>
     <div id="collapseHouse" class="collapse" aria-labelledby="headingHouse" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div>[smb_include]reg.house.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="houseSelect">Housing:</label><br/>
+          <select ng-model="input.house.type" required id="houseSelect">
+            <option value="none">Not participating in housing</option>
+            <option value="host">HOST: I am local and can host other guests</option>
+            <option value="guest">GUEST: I would love a place to stay</option>
+          </select>
+        </div>
+        <div ng-show="input.house.type === 'host'">
+          <div>[smb_include]reg.house.host[/smb_include]</div>
+        </div>
+        <div ng-show="input.house.type === 'guest'">
+          <div>[smb_include]reg.house.guest[/smb_include]</div>
+        </div>
+        <div ng-show="input.house.type == 'none'">
+          <div>[smb_include]reg.house.none[/smb_include]</div>
+          <!-- -->
+        </div>
+
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <div class="prompt">Which nights <span ng-show="input.house.type === 'guest'">do you need</span><span ng-show="input.house.type === 'host'">can you provide</span> housing?</div>
+          <label>
+            <input type="checkbox" checklist-model="input.house.days" value="thursday" />
+            Thursday
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.days" value="friday" />
+            Friday
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.days" value="saturday" />
+            Saturday
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.days" value="sunday" />
+            Sunday
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.days" value="monday" />
+            Monday
+          </label>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <label for="q_address">What is your address?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.address"
+              id="q_address"
+              placeholder="Street address"
+              ng-required="input.house.type === 'host'" />
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <label for="q_guestcount">How many guests can you accommodate?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.guestcount"
+              id="q_guestcount"
+              ng-required="input.house.type === 'host'" />
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest'">
+          <div class="prompt">I wish to avoid...</div>
+          <label>
+            <input type="checkbox" checklist-model="input.house.avoid" value="cats" />
+            Cats
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.avoid" value="dogs" />
+            Dogs
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.avoid" value="smoke" />
+            Smoke/Smoking
+          </label>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest'">
+          <label for="q_alsoavoid">I cannot be housed with...</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.alsoavoid"
+              placeholder="other allergies or constraints"
+              id="q_alsoavoid" />
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <div class="prompt">My house has...</div>
+          <label>
+            <input type="checkbox" checklist-model="input.house.allergens" value="cats" />
+            Cats
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.allergens" value="dogs" />
+            Dogs
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.allergens" value="smoke" />
+            Smoke/Smoking
+          </label>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <label for="q_matchyes">I would like to be matched with...</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.matchyes"
+              id="q_matchyes"
+              placeholder="Other host or guest names" />
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <label for="q_matchno">Please do not match me with...</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.matchno"
+              id="q_matchno"
+              placeholder="Other host or guest names" />
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <div class="prompt">I plan to attend...</div>
+          <label>
+            <input type="checkbox" checklist-model="input.house.attending" value="workshops" />
+            Workshops
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.attending" value="evening" />
+            Evening Dances
+          </label>
+          <label>
+            <input type="checkbox" checklist-model="input.house.attending" value="latenight" />
+            Late Night Dances
+          </label>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <div class="prompt">Will you have a car?</div>
+          <label>
+            <input type="radio" ng-model="input.house.car" value="yes" />
+            Yes
+          </label>
+          <label>
+            <input type="radio" ng-model="input.house.car" value="no" />
+            No
+          </label>
+        </div>
+        <div class="form-group" ng-show="(input.house.type === 'guest' || input.house.type === 'host') && input.house.car === 'yes'">
+          <label for="q_carseats">How many <i>additional</i> available seats in your car?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.carseats"
+              ng-required="(input.house.type === 'guest' || input.house.type === 'host') && input.house.car === 'yes'"
+              id="q_carseats" />
+        </div>
+
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <label for="q_parking">How many parking spaces or permits do you have for guests?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.parking"
+              ng-required="input.house.type === 'host'"
+              id="q_parking"/>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <label for="q_sleeping">Briefly describe the sleeping arrangements for guests.</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.sleeping"
+              ng-required="input.house.type === 'host'"
+              id="q_sleeping"/>
+        </div>
+        <div class="form-group" ng-show="input.house.type === 'host'">
+          <label for="q_homeinfo">Anything else we should know about your home?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.homeinfo"
+              id="q_homeinfo"/>
+        </div>
+
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <label for="q_moreinfo">Any additional housing comments?</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.moreinfo"
+              id="q_moreinfo"/>
+        </div>
+
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</div>
       </div>
     </div>
@@ -118,11 +318,19 @@
 
   <div class="card">
     <div class="card-header" id="headingVolunteer" data-toggle="collapse" data-target="#collapseVolunteer" aria-expanded="false" aria-controls="collapseVolunteer">
-      <h3>Volunteer</h3>
+      <h3>Volunteering{{VolunteerTitle()}}</h3>
     </div>
     <div id="collapseVolunteer" class="collapse" aria-labelledby="headingVolunteer" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div>[smb_include]reg.volunteer.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="volunteerSelect">Are you interested in volunteering?</label><br/>
+          <select ng-model="input.volunteer.type" required id="volunteerSelect">
+            <option value="no">Not this year</option>
+            <option value="yes">Yes, I am happy to help.</option>
+          </select>
+          <div>[smb_include]reg.volunteer.bottom[/smb_include]</div>
+        </div>
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</div>
       </div>
     </div>
@@ -130,23 +338,50 @@
 
   <div class="card">
     <div class="card-header" id="headingPolicies" data-toggle="collapse" data-target="#collapsePolicies" aria-expanded="false" aria-controls="collapsePolicies">
-      <h3>Policies</h3>
+      <h3>Policies{{PolicyTitle()}}</h3>
     </div>
     <div id="collapsePolicies" class="collapse" aria-labelledby="headingPolicies" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div>[smb_include]reg.policies.top[/smb_include]</div>
+        <div class="form-group">
+          <input type="checkbox" id="acceptPolicies" required value="yes" ng-model="input.policies.accepted"></input>
+          <label for="acceptPolicies">[smb_include]reg.policies.accept[/smb_include]</label>
+        </div>
         <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</div>
       </div>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-header" id="headingComplete" data-toggle="collapse" data-target="#collapseComplete" aria-expanded="false" aria-controls="collapseComplete">
-      <h3>Complete</h3>
+    <div class="card-header" id="headingComplete" data-toggle="collapse" data-target="#collapseComplete" aria-expanded="false" aria-controls="collapseComplete"><!-- TODO: background color -->
+      <h3>Check Out</h3>
     </div>
     <div id="collapseComplete" class="collapse" aria-labelledby="headingComplete" data-parent="#regWorkflow">
       <div class="card-body">
-        This is where the event pass form information would go
+        <div class="form-group">
+          <label for="q_voucher">Voucher Code</label><br/>
+          <input type="text" ng-model="input.voucher" id="q_voucher" placeholder="Optional" />
+        </div>
+        <!-- summary -->
+        <!-- button -->
+        <div class="form-group">
+          <div class="btn btn-primary" ng-click="Preview()">Review Order</div>
+        </div>
+
+        <div class="preview-errors" ng-show="HasErrors()">
+          <h3>Errors:</h3>
+          <ul>
+            <li ng-repeat="err in errors">{{err}}</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="preview" ng-show="ShowPreview()">
+        <h3>Preview of your order:</h3>
+        <pre>{{preview}}</pre>
+        <div class="form-group">
+          <div class="btn btn-primary" ng-click="Checkout()">Purchase with PayPal!</div>
+        </div>
       </div>
     </div>
   </div>
@@ -154,26 +389,191 @@
 
 <script type="text/javascript">
 
+/**
+ * Checklist-model
+ * AngularJS directive for list of checkboxes
+ * https://github.com/vitalets/checklist-model
+ * License: MIT http://opensource.org/licenses/MIT
+ */
+
+angular.module('checklist-model', [])
+.directive('checklistModel', ['$parse', '$compile', function($parse, $compile) {
+  // contains
+  function contains(arr, item, comparator) {
+    if (angular.isArray(arr)) {
+      for (var i = arr.length; i--;) {
+        if (comparator(arr[i], item)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // add
+  function add(arr, item, comparator) {
+    arr = angular.isArray(arr) ? arr : [];
+      if(!contains(arr, item, comparator)) {
+          arr.push(item);
+      }
+    return arr;
+  }
+
+  // remove
+  function remove(arr, item, comparator) {
+    if (angular.isArray(arr)) {
+      for (var i = arr.length; i--;) {
+        if (comparator(arr[i], item)) {
+          arr.splice(i, 1);
+          break;
+        }
+      }
+    }
+    return arr;
+  }
+
+  // http://stackoverflow.com/a/19228302/1458162
+  function postLinkFn(scope, elem, attrs) {
+     // exclude recursion, but still keep the model
+    var checklistModel = attrs.checklistModel;
+    attrs.$set("checklistModel", null);
+    // compile with `ng-model` pointing to `checked`
+    $compile(elem)(scope);
+    attrs.$set("checklistModel", checklistModel);
+
+    // getter for original model
+    var checklistModelGetter = $parse(checklistModel);
+    var checklistChange = $parse(attrs.checklistChange);
+    var checklistBeforeChange = $parse(attrs.checklistBeforeChange);
+    var ngModelGetter = $parse(attrs.ngModel);
+
+
+
+    var comparator = function (a, b) {
+      if(!isNaN(a) && !isNaN(b)) {
+        return String(a) === String(b);
+      } else {
+        return angular.equals(a,b);
+      }
+    };
+
+    if (attrs.hasOwnProperty('checklistComparator')){
+      if (attrs.checklistComparator[0] == '.') {
+        var comparatorExpression = attrs.checklistComparator.substring(1);
+        comparator = function (a, b) {
+          return a[comparatorExpression] === b[comparatorExpression];
+        };
+
+      } else {
+        comparator = $parse(attrs.checklistComparator)(scope.$parent);
+      }
+    }
+
+    // watch UI checked change
+    var unbindModel = scope.$watch(attrs.ngModel, function(newValue, oldValue) {
+      if (newValue === oldValue) {
+        return;
+      }
+
+      if (checklistBeforeChange && (checklistBeforeChange(scope) === false)) {
+        ngModelGetter.assign(scope, contains(checklistModelGetter(scope.$parent), getChecklistValue(), comparator));
+        return;
+      }
+
+      setValueInChecklistModel(getChecklistValue(), newValue);
+
+      if (checklistChange) {
+        checklistChange(scope);
+      }
+    });
+
+    // watches for value change of checklistValue
+    var unbindCheckListValue = scope.$watch(getChecklistValue, function(newValue, oldValue) {
+      if( newValue != oldValue && angular.isDefined(oldValue) && scope[attrs.ngModel] === true ) {
+        var current = checklistModelGetter(scope.$parent);
+        checklistModelGetter.assign(scope.$parent, remove(current, oldValue, comparator));
+        checklistModelGetter.assign(scope.$parent, add(current, newValue, comparator));
+      }
+    }, true);
+
+    var unbindDestroy = scope.$on('$destroy', destroy);
+
+    function destroy() {
+      unbindModel();
+      unbindCheckListValue();
+      unbindDestroy();
+    }
+
+    function getChecklistValue() {
+      return attrs.checklistValue ? $parse(attrs.checklistValue)(scope.$parent) : attrs.value;
+    }
+
+    function setValueInChecklistModel(value, checked) {
+      var current = checklistModelGetter(scope.$parent);
+      if (angular.isFunction(checklistModelGetter.assign)) {
+        if (checked === true) {
+          checklistModelGetter.assign(scope.$parent, add(current, value, comparator));
+        } else {
+          checklistModelGetter.assign(scope.$parent, remove(current, value, comparator));
+        }
+      }
+
+    }
+
+    // declare one function to be used for both $watch functions
+    function setChecked(newArr, oldArr) {
+      if (checklistBeforeChange && (checklistBeforeChange(scope) === false)) {
+        setValueInChecklistModel(getChecklistValue(), ngModelGetter(scope));
+        return;
+      }
+      ngModelGetter.assign(scope, contains(newArr, getChecklistValue(), comparator));
+    }
+
+    // watch original model change
+    // use the faster $watchCollection method if it's available
+    if (angular.isFunction(scope.$parent.$watchCollection)) {
+        scope.$parent.$watchCollection(checklistModel, setChecked);
+    } else {
+        scope.$parent.$watch(checklistModel, setChecked, true);
+    }
+  }
+
+  return {
+    restrict: 'A',
+    priority: 1000,
+    terminal: true,
+    scope: true,
+    compile: function(tElement, tAttrs) {
+
+      if (!tAttrs.checklistValue && !tAttrs.value) {
+        throw 'You should provide `value` or `checklist-value`.';
+      }
+
+      // by default ngModel is 'checked', so we set it if not specified
+      if (!tAttrs.ngModel) {
+        // local scope var storing individual checkbox model
+        tAttrs.$set("ngModel", "checked");
+      }
+
+      return postLinkFn;
+    }
+  };
+}]);
+
+
+
 var passes = [mdsc_json_list id="passes" filter_by="published" order_by="sort_id"][/mdsc_json_list];
+var comps = [mdsc_json_list id="comps" filter_by="published" order_by="sort_id"][/mdsc_json_list];
+var shirts = [mdsc_json_list id="shirts" filter_by="published" order_by="sort_id"][/mdsc_json_list];
+var food = [mdsc_json_list id="food" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 
-var comps = [
-  {
-    id: "none",
-    longname: "None",
-    content: "Description",
-    price: 0.00
-  },
-  {
-    id: "advancedmm",
-    longname: "Advanced M&M",
-    content: "Description",
-    price: 5.00
-  },
-]
+var regApp = angular.module('regApp',['ngStorage', 'checklist-model']);
 
-var regApp = angular.module('regApp',[]);
+regApp.controller('RegistrationController', function($scope, $sce, $sessionStorage, $http) {
 
-regApp.controller('RegistrationController', ['$scope', '$sce', function($scope, $sce) {
+  $scope.preview_data = {};
+  $scope.preview = "";
+  $scope.errors = [];
   $scope.input = {}
   $scope.data = {}
   $scope.data.passes = jQuery.extend(true, [], passes);
@@ -188,6 +588,19 @@ regApp.controller('RegistrationController', ['$scope', '$sce', function($scope, 
     value.content = $sce.trustAsHtml(value.content);
   });
 
+  $scope.data.food = jQuery.extend(true, [], food);
+
+  jQuery.each($scope.data.food, function(index, value) {
+    value.content = $sce.trustAsHtml(value.content);
+  });
+
+  $scope.data.shirts = jQuery.extend(true, [], shirts);
+
+  jQuery.each($scope.data.shirts, function(index, value) {
+    value.content = $sce.trustAsHtml(value.content);
+    value.sizes = value.sizes.split(',');
+  });
+
   $scope.NeedCode = function() {
     if (!$scope.input.pass || !$scope.input.pass.type) {
       return false;
@@ -199,8 +612,143 @@ regApp.controller('RegistrationController', ['$scope', '$sce', function($scope, 
 
     return match.length > 0;
   };
-}]);
+
+  $scope.ShirtSizes = function() {
+    if (!$scope.input.shirt || !$scope.input.shirt.type) {
+      return [];
+    }
+
+    var match = jQuery.grep($scope.data.shirts, function(value, index) {
+      return value.id == $scope.input.shirt.type;
+    });
+
+    if (match.length == 0) {
+      return [];
+    }
+
+    var sz = match[0].sizes;
+    return (sz == null) ? [] : sz;
+  };
+
+  $scope.HasErrors = function() {
+    if ($scope.errors == null || $scope.errors.length === 0) {
+      return false;
+    }
+    return true;
+  };
+
+  $scope.ShowPreview = function() {
+    if ($scope.preview == null || $scope.preview === "") {
+      return false;
+    }
+    if (angular.equals($scope.preview_data, $scope.input)) {
+      return true;
+    }
+    return false;
+  };
+
+  $scope.FetchPrice = function(data_array, find_id) {
+    var match = jQuery.grep(data_array, function(value, index) {
+      return value.id === find_id;
+    });
+
+    if (match.length !== 1) {
+      return 'error!';
+    }
+
+    return match[0].price;
+  };
+
+  $scope.PassTitle = function() {
+    if (! $scope.input.pass || ! $scope.input.pass.type) { return ''; }
+    return ': $ ' + $scope.FetchPrice($scope.data.passes, $scope.input.pass.type);
+  };
+  $scope.CompTitle = function() {
+    if (! $scope.input.comp || ! $scope.input.comp.type) { return ''; }
+    return ': $ ' + $scope.FetchPrice($scope.data.comps, $scope.input.comp.type);
+  };
+  $scope.ShirtTitle = function() {
+    if (! $scope.input.shirt || ! $scope.input.shirt.type) { return ''; }
+    return ': $ ' + $scope.FetchPrice($scope.data.shirts, $scope.input.shirt.type);
+  };
+  $scope.FoodTitle = function() {
+    if (! $scope.input.food || ! $scope.input.food.type) { return ''; }
+    return ': $ ' + $scope.FetchPrice($scope.data.food, $scope.input.food.type);
+  };
+  $scope.HouseTitle = function() {
+    if (! $scope.input.house || ! $scope.input.house.type) { return ''; }
+    return ': ' + $scope.input.house.type;
+  };
+  $scope.VolunteerTitle = function() {
+    if (! $scope.input.volunteer || ! $scope.input.volunteer.type) { return ''; }
+    return ': ' + $scope.input.volunteer.type;
+  };
+  $scope.PolicyTitle = function() {
+    if (! $scope.input.policies || ! $scope.input.policies.accepted) { return ''; }
+    return ': accepted';
+  };
+
+  // local storage
+  $scope.input = $sessionStorage.$default({});
+
+  $scope.Reset = function() {
+    var r = window.confirm("Clear the entire form?");
+    if (r == true) {
+      $scope.input.$reset({});
+    }
+  };
+
+  $scope.Preview = function() {
+    var cfg = {'params': {'action': 'smbpreview'} };
+    var data = angular.copy($scope.input);
+    var cb = function(response) {
+      window.smb_register_response = response;
+      console.log("response follows");
+      console.log(response);
+
+      $scope.errors = [];
+      $scope.preview = "";
+      $scope.preview_data = data;
+
+      if (response.status >= 500 && response.status < 600) {
+        $scope.errors.push("Internal server error. Please try again. For persistent errors, please inform web@sweetmolassesblues.com");
+        return;
+      }
+
+      if (response.status >= 400 && response.status < 500) {
+        $scope.errors.push("Client request error. Please reload the page and try again. For persistent errors, please inform web@sweetmolassesblues.com");
+        return;
+      }
+
+      try {
+        $scope.errors = response.data.data.errors;
+      } catch(err) {
+        $scope.errors.push("Internal error: " + err.message);
+      }
+
+      try {
+        $scope.preview = response.data.data.summary;
+      } catch(err) {
+        $scope.errors.push("Internal error: " + err.message);
+      }
+    };
+
+    $http.post(ajaxurl, data, cfg).then(cb,cb);
+    // https://developer.paypal.com/docs/checkout/#
+    // mark submit button as "please wait" and make all form fields disabled
+    // ajax post the full order details.
+    // server: create order object as "pending". Return name, summary, price, and ID.
+    // Show order number, summary, price, paypal pay button, and cancel.
+    // ... paypal checkout flow ...
+    // Send "order complete" to server along with whatever ID necessary to confirm txn.
+    // server: Confirm order status and update order object as "paid". Send email confirmation.
+    // Client: Show "DONE!" and "receipt sent to your email". Clear form.
+    // On error, show "Error during processing. If you have a receipt from paypal, please contact ...email address.."
+  };
+
+  $scope.Checkout = function() {
+    window.alert('Not yet implemented');
+  };
+});
 
 </script>
-
-

@@ -2,6 +2,7 @@
 /* Carefully importing from My Data Shortcodes aka mdsc */
 
 $mdsc_ipaths = [
+	'my_data_shortcodes/includes/util.php',
 	'my_data_shortcodes/includes/html.php',
 	'my_data_shortcodes/includes/data.php',
 ];
@@ -17,7 +18,8 @@ foreach ($mdsc_ipaths as $ipath) {
 
 $mdsc_classes = [
     'MDSC',
-    'HtmlGen'
+    'HtmlGen',
+    'MDSC_Hacks'
 ];
 
 foreach ($mdsc_classes as $clzz) {
