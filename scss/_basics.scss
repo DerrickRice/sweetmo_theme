@@ -8,31 +8,31 @@ html {
 }
 
 body.wordpress {
-	font-family: $body-font;
-	font-size: 16px;
-	font-size: 1.6rem;
-	font-weight: 400;
-	line-height: 1.625;
-	background-color: #000000;
-	padding-top: 40px;
+    font-family: $body-font;
+    font-size: 16px;
+    font-size: 1.6rem;
+    font-weight: 400;
+    line-height: 1.625;
+    background-color: #000000;
+    padding-top: 40px;
     @include mobile {
         padding-top: 0px;
     }
     @include print {
         padding-top: 0px;
         line-height: 1.4;
-    	background-color: #ffffff;
+        background-color: #ffffff;
     }
 }
 
 /* Typographical Elements */
 
 a {
-	color: $darkest-color;
+    color: $darkest-color;
     @include print {
         color: black;
     }
-	text-decoration: underline;
+    text-decoration: underline;
 }
 
 a:hover,
@@ -44,76 +44,76 @@ a:focus {
 }
 
 p {
-	margin: 0 0 24px;
-	padding: 0;
+    margin: 0 0 24px;
+    padding: 0;
 }
 
 strong {
-	font-weight: 700;
+    font-weight: 700;
 }
 
 ol, ul {
-	list-style: none;
+    list-style: none;
 }
 
 ul {
-	list-style: disc outside;
-	margin: 0 0 25px 48px;
-	padding: 0;
+    list-style: disc outside;
+    margin: 0 0 25px 48px;
+    padding: 0;
 }
 
 ol {
-	list-style-type: decimal;
-	margin: 0 0 25px 48px;
+    list-style-type: decimal;
+    margin: 0 0 25px 48px;
 }
 
 ol ol {
-	list-style: upper-roman;
+    list-style: upper-roman;
 }
 
 ol ol ol {
-	list-style: lower-roman;
+    list-style: lower-roman;
 }
 
 ol ol ol ol {
-	list-style: upper-alpha;
+    list-style: upper-alpha;
 }
 
 ol ol ol ol ol {
-	list-style: lower-alpha;
+    list-style: lower-alpha;
 }
 
 ul ul,
 ol ol,
 ul ol,
 ol ul {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 blockquote {
-	margin: 0;
-	padding: 24px 40px;
+    margin: 0;
+    padding: 24px 40px;
 }
 
 blockquote::before {
-	content: "\201C";
-	display: block;
-	font-size: 30px;
-	height: 0;
-	left: -20px;
-	position: relative;
-	top: -10px;
+    content: "\201C";
+    display: block;
+    font-size: 30px;
+    height: 0;
+    left: -20px;
+    position: relative;
+    top: -10px;
 }
 
 pre {
-	background-color: #F9F9F9;
-	overflow: scroll;
-	padding: 0 20px;
-	white-space: pre;
+    background-color: #F9F9F9;
+    overflow: scroll;
+    padding: 0 20px;
+    white-space: pre;
 }
 
 cite {
-	font-style: normal;
+    font-style: normal;
 }
 
 /* Headings
@@ -125,13 +125,8 @@ h3,
 h4,
 h5,
 h6 {
-	color: $dark-background;
     page-break-after: avoid;
-	font-family: $header-font;
-	font-weight: normal;
-	line-height: 1.4;
-	margin: 0;
-	margin-bottom: 22px;
+    margin: 0;
     padding: 0;
     @include print {
         color: black;
@@ -140,8 +135,6 @@ h6 {
 }
 
 h1 {
-    font-size: 36px;
-	font-size: 3.60rem;
     @include notprint {
         padding: 0 0 0 6px;
         background: linear-gradient(to right, $lightest-color 0%, rgba($lightest-color, 0.0) 4em);
@@ -163,8 +156,6 @@ h1 {
 }
 
 h2 {
-    font-size: 30px;
-	font-size: 3rem;
     @include notprint {
         padding: 0 0 0 6px;
         background: linear-gradient(to right, $lightest-color 0%, rgba($lightest-color, 0.0) 4em);
@@ -173,22 +164,22 @@ h2 {
 
 h3 {
     font-size: 24px;
-	font-size: 2.4rem;
+    font-size: 2.4rem;
 }
 
 h4 {
     font-size: 20px;
-	font-size: 2rem;
+    font-size: 2rem;
 }
 
 h5 {
     font-size: 18px;
-	font-size: 1.8rem;
+    font-size: 1.8rem;
 }
 
 h6 {
     font-size: 16px;
-	font-size: 1.6rem;
+    font-size: 1.6rem;
 }
 
 /* Objects
@@ -199,14 +190,14 @@ iframe,
 img,
 object,
 video {
-	max-width: 100%;
+    max-width: 100%;
 }
 
 iframe {
-	border: none;
+    border: none;
 }
 
 img {
-	height: auto;
-	width: auto\9; /* IE8 */
+    height: auto;
+    width: auto\9; /* IE8 */
 }

@@ -1,31 +1,31 @@
 input,
 select,
 textarea {
-	background-color: $light-background;
-	border: 1px solid #ccc;
-	padding: 1px;
-	max-width: 100%;
+    background-color: $light-background;
+    border: 1px solid #ccc;
+    padding: 1px;
+    max-width: 100%;
 }
 
 input:focus,
 textarea:focus {
-	border: 1px solid #999;
-	outline: none;
+    border: 1px solid #999;
+    outline: none;
 }
 
 input[type="checkbox"],
 input[type="image"],
 input[type="radio"] {
-	width: auto;
+    width: auto;
 }
 
 ::-moz-placeholder {
-	color: #777;
-	opacity: 1;
+    color: #777;
+    opacity: 1;
 }
 
 ::-webkit-input-placeholder {
-	color: #777;
+    color: #777;
 }
 
 button,
@@ -33,12 +33,12 @@ input[type="button"],
 input[type="reset"],
 input[type="submit"],
 .button {
-	@include inverse-colors;
-	border: 0;
-	cursor: pointer;
-	font-weight: 700;
-	padding: 16px 24px;
-	width: auto;
+    @include inverse-colors;
+    border: 0;
+    cursor: pointer;
+    font-weight: 700;
+    padding: 16px 24px;
+    width: auto;
 }
 
 button:hover,
@@ -51,20 +51,20 @@ input:focus[type="button"],
 input:focus[type="reset"],
 input:focus[type="submit"],
 .button:focus  {
-	background-color: #22130c;
-	color: #fff;
+    background-color: #22130c;
+    color: #fff;
 }
 
 .entry-content .button:hover,
 .entry-content .button:focus {
-	color: #fff;
+    color: #fff;
 }
 
 .button {
-	display: inline-block;
+    display: inline-block;
 }
 
 input[type="search"]::-webkit-search-cancel-button,
 input[type="search"]::-webkit-search-results-button {
-	display: none;
+    display: none;
 }

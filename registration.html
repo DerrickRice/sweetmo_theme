@@ -1,4 +1,3 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 <!-- https://docs.angularjs.org/misc/downloading -->
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular-animate.js"></script>
@@ -9,7 +8,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
 <div class="accordion" id="regWorkflow" ng-app="regApp" ng-controller="RegistrationController">
-  <div class="btn btn-warning" ng-click="Reset()">Clear All Fields</div>
+  <div class="btn btn-warning my-2" ng-click="Reset()">Clear All Fields</div>
 
   <div class="card">
     <div class="card-header" id="headingYou" data-toggle="collapse" data-target="#collapseYou" aria-expanded="true" aria-controls="collapseYou">
@@ -24,7 +23,7 @@
           <small id="emailHelp" class="form-text text-muted">For your receipt and updates about the event.</small>
         </div>
         <input type="text" class="form-control" ng-model="input.user.scene" id="sceneField" placeholder="Home Scene (optional)" />
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapsePass" aria-controls="collapsePass">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePass" aria-controls="collapsePass">Next</div>
       </div>
     </div>
   </div>
@@ -51,7 +50,7 @@
             <small id="passCodeHelp" class="form-text text-muted">See the description, above, for the code.</small>
           </div>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseComp" aria-controls="collapseComp">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComp" aria-controls="collapseComp">Next</div>
       </div>
     </div>
   </div>
@@ -79,7 +78,7 @@
             <option value="lead">Lead</option>
           </select>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
       </div>
     </div>
   </div>
@@ -108,7 +107,7 @@
             <option ng-value="sz" ng-repeat="sz in ShirtSizes()">{{sz}}</option>
           </select>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseFood" aria-controls="collapseFood">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseFood" aria-controls="collapseFood">Next</div>
       </div>
     </div>
   </div>
@@ -129,7 +128,7 @@
         <div ng-repeat="food_iter in data.food" ng-show="input.food.type==food_iter.id">
           <ng-bind-html ng-bind-html="pass_iter.content"></ng-bind-html>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
       </div>
     </div>
   </div>
@@ -311,7 +310,7 @@
               id="q_moreinfo"/>
         </div>
 
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</div>
       </div>
     </div>
   </div>
@@ -331,7 +330,7 @@
           </select>
           <div>[smb_include]reg.volunteer.bottom[/smb_include]</div>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</div>
       </div>
     </div>
   </div>
@@ -347,7 +346,7 @@
           <input type="checkbox" id="acceptPolicies" required value="yes" ng-model="input.policies.accepted"></input>
           <label for="acceptPolicies">[smb_include]reg.policies.accept[/smb_include]</label>
         </div>
-        <div class="btn btn-primary" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</div>
+        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</div>
       </div>
     </div>
   </div>
@@ -360,15 +359,15 @@
       <div class="card-body">
         <div class="form-group">
           <label for="q_voucher">Voucher Code</label><br/>
-          <input type="text" ng-model="input.voucher" id="q_voucher" placeholder="Optional" />
+          <input class="form-control" type="text" ng-model="input.voucher" id="q_voucher" placeholder="Optional" />
         </div>
         <!-- summary -->
         <!-- button -->
         <div class="form-group">
-          <div class="btn btn-primary" ng-click="Preview()">Review Order</div>
+          <div class="btn btn-primary my-2" ng-click="Preview()">Review Order</div>
         </div>
 
-        <div class="preview-errors" ng-show="HasErrors()">
+        <div class="alert alert-danger" ng-show="HasErrors()">
           <h3>Errors:</h3>
           <ul>
             <li ng-repeat="err in errors">{{err}}</li>
@@ -376,11 +375,11 @@
         </div>
       </div>
 
-      <div class="preview" ng-show="ShowPreview()">
+      <div class="alert alert-success" ng-show="ShowPreview()">
         <h3>Preview of your order:</h3>
         <pre>{{preview}}</pre>
         <div class="form-group">
-          <div class="btn btn-primary" ng-click="Checkout()">Purchase with PayPal!</div>
+          <div class="btn btn-primary my-2" ng-click="Checkout()">Purchase with PayPal!</div>
         </div>
       </div>
     </div>
