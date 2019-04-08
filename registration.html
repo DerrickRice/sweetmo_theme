@@ -6,7 +6,11 @@
 <!-- https://getbootstrap.com/ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AfplibUzvHYJ017glTsvvj1iMGCGI0zK2AiVpoK_NRGCu5C-peXsmgShux8MGNBIxlk341nbGFw4drvK"></script>
 
+<div class="alert alert-info">For any problems or questions about registration, please email <a href="mailto:registration@sweetmolassesblues.com?subject=SweetMo%20Registration%20Question">registration@sweetmolassesblues.com</a></div>
+
+<!-- do not change the id - the paypal integration looks for it -->
 <div class="accordion" id="regWorkflow" ng-app="regApp" ng-controller="RegistrationController">
   <div class="btn btn-warning my-2" ng-click="Reset()">Clear All Fields</div>
 
@@ -363,7 +367,7 @@
         </div>
         <!-- summary -->
         <!-- button -->
-        <div class="form-group">
+        <div class="form-group" ng-show="!ShowThanks()">
           <div class="btn btn-primary my-2" ng-click="Preview()">Review Order</div>
         </div>
 
@@ -378,9 +382,14 @@
       <div class="alert alert-success" ng-show="ShowPreview()">
         <h3>Preview of your order:</h3>
         <pre>{{preview}}</pre>
-        <div class="form-group">
-          <div class="btn btn-primary my-2" ng-click="Checkout()">Purchase with PayPal!</div>
-        </div>
+      </div>
+
+      <div class="form-group" ng-show="ShowPaypal()">
+        <div id="paypal-button-container"></div>
+      </div>
+
+      <div ng-show="ShowThanks()" style="font-weight:bold;">
+        Your order (#{{ppid}}) has been completed. You should receive an email receipt soon. For any questions about your registration, please contact registration@sweetmolassesblues.com.
       </div>
     </div>
   </div>
@@ -569,7 +578,7 @@ var food = [mdsc_json_list id="food" filter_by="published" order_by="sort_id"][/
 var regApp = angular.module('regApp',['ngStorage', 'checklist-model']);
 
 regApp.controller('RegistrationController', function($scope, $sce, $sessionStorage, $http) {
-
+  $scope.ppid = "";
   $scope.preview_data = {};
   $scope.preview = "";
   $scope.errors = [];
@@ -646,6 +655,20 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     return false;
   };
 
+  $scope.ShowPaypal = function() {
+    if ($scope.preview == null || $scope.preview === "" || $scope.ppid.length > 0) {
+      return false;
+    }
+    if (angular.equals($scope.preview_data, $scope.input)) {
+      return true;
+    }
+    return false;
+  };
+
+  $scope.ShowThanks = function() {
+    return $scope.ppid.length > 0;
+  };
+
   $scope.FetchPrice = function(data_array, find_id) {
     var match = jQuery.grep(data_array, function(value, index) {
       return value.id === find_id;
@@ -697,57 +720,105 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     }
   };
 
+  $scope.UpdateUi = function(response, data) {
+    // TODO: remove console.log
+    console.log(response);
+
+    $scope.errors = [];
+    $scope.preview = "";
+    $scope.preview_data = data;
+
+    if (response.status >= 500 && response.status < 600) {
+      $scope.errors.push("Internal server error. Please try again. For persistent errors, please inform registration@sweetmolassesblues.com");
+      return;
+    }
+
+    if (response.status >= 400 && response.status < 500) {
+      $scope.errors.push("Client request error. Please reload the page and try again. For persistent errors, please inform registration@sweetmolassesblues.com");
+      return;
+    }
+
+    try {
+      $scope.errors = response.data.data.errors;
+    } catch(err) {
+      $scope.errors.push("Internal error: " + err.message);
+    }
+
+    try {
+      $scope.preview = response.data.data.summary;
+    } catch(err) {
+      $scope.errors.push("Internal error: " + err.message);
+    }
+  };
+
   $scope.Preview = function() {
     var cfg = {'params': {'action': 'smbpreview'} };
     var data = angular.copy($scope.input);
     var cb = function(response) {
-      window.smb_register_response = response;
-      console.log("response follows");
-      console.log(response);
-
-      $scope.errors = [];
-      $scope.preview = "";
-      $scope.preview_data = data;
-
-      if (response.status >= 500 && response.status < 600) {
-        $scope.errors.push("Internal server error. Please try again. For persistent errors, please inform web@sweetmolassesblues.com");
-        return;
-      }
-
-      if (response.status >= 400 && response.status < 500) {
-        $scope.errors.push("Client request error. Please reload the page and try again. For persistent errors, please inform web@sweetmolassesblues.com");
-        return;
-      }
-
-      try {
-        $scope.errors = response.data.data.errors;
-      } catch(err) {
-        $scope.errors.push("Internal error: " + err.message);
-      }
-
-      try {
-        $scope.preview = response.data.data.summary;
-      } catch(err) {
-        $scope.errors.push("Internal error: " + err.message);
-      }
+      $scope.UpdateUi(response, data);
     };
 
     $http.post(ajaxurl, data, cfg).then(cb,cb);
-    // https://developer.paypal.com/docs/checkout/#
-    // mark submit button as "please wait" and make all form fields disabled
-    // ajax post the full order details.
-    // server: create order object as "pending". Return name, summary, price, and ID.
-    // Show order number, summary, price, paypal pay button, and cancel.
-    // ... paypal checkout flow ...
-    // Send "order complete" to server along with whatever ID necessary to confirm txn.
-    // server: Confirm order status and update order object as "paid". Send email confirmation.
-    // Client: Show "DONE!" and "receipt sent to your email". Clear form.
-    // On error, show "Error during processing. If you have a receipt from paypal, please contact ...email address.."
   };
 
-  $scope.Checkout = function() {
-    window.alert('Not yet implemented');
+  $scope.CreateOrder = function() {
+    var cfg = {'params': {'action': 'smbregister'} };
+    var data = angular.copy($scope.input);
+    var cb = function(response) {
+      $scope.UpdateUi(response, data);
+      if ($scope.errors.length !== 0) {
+        console.log("CreateOrder -> null");
+        throw "Failed to create the order on the server side.";
+      }
+
+      var ppid = "";
+      try {
+        ppid = response.data.data.ppid;
+      } catch(err) {
+        $scope.errors.push("Internal error: " + err.message);
+        throw err;
+      }
+
+      if (!ppid) {
+        $scope.errors.push("Internal error: Invalid PayPal order id. Please try again.");
+        throw "Failed to create the order on the server side (no ppid)";
+      }
+
+      console.log("CreateOrder -> ppid = " + ppid);
+      return ppid;
+    };
+
+    return $http.post(ajaxurl, data, cfg).then(cb,cb);
   };
+
+  $scope.ConfirmOrder = function(order_id) {
+    window.alert("Confirming order_id" + order_id);
+    var cfg = {'params': {'action': 'smbconfirm', 'ppid': order_id} };
+    var cb = function(response) {
+      $scope.UpdateUi(response, data);
+    };
+
+    return $http.get(ajaxurl, cfg).then(cb,cb);
+  };
+});
+
+jQuery(document).ready(function() {
+  paypal.Buttons({
+    createOrder: function(data, actions) {
+      var scope = angular.element(jQuery('#regWorkflow')).scope();
+      return scope.$apply(function() {
+        return scope.CreateOrder();
+      });
+    },
+    onApprove: function(data, actions) {
+      return actions.order.capture().then(function(order_details) {
+        var scope = angular.element(jQuery('#regWorkflow')).scope();
+        return scope.$apply(function() {
+          return scope.ConfirmOrder(data.orderId);
+        });
+      });
+    }
+  }).render('#paypal-button-container');
 });
 
 </script>

@@ -6,11 +6,11 @@ class OrderDescription {
   public $lastname;
   public $email;
   public $status;
-  public $orderid;
+  public $id;
+  public $ppid;
   public $order;
   public $lineitems;
   public $errors;
-  public $paypal_orderid;
 
   public function __construct() {
     $this->errors = array();
@@ -60,8 +60,11 @@ class OrderDescription {
     $rv['firstname'] = $this->firstname;
     $rv['lastname'] = $this->lastname;
     $rv['email'] = $this->email;
-    if (!is_null($this->orderid)) {
-      $rv['orderid'] = $this->orderid;
+    if (!is_null($this->id)) {
+      $rv['id'] = $this->id;
+    }
+    if (!is_null($this->ppid)) {
+      $rv['ppid'] = $this->ppid;
     }
     if (!is_null($this->status)) {
       $rv['status'] = $this->status;
@@ -96,10 +99,22 @@ class SweetMoRegistration {
 
     add_action(
       'wp_ajax_nopriv_smbregister',
-      array($this, 'register_initial_post'));
+      array($this, 'create_order_post'));
     add_action(
       'wp_ajax_smbregister',
-      array($this, 'register_initial_post'));
+      array($this, 'create_order_post'));
+
+    add_action(
+      'wp_ajax_nopriv_smbconfirm',
+      array($this, 'confirm_order_get'));
+    add_action(
+      'wp_ajax_smbconfirm',
+      array($this, 'confirm_order_get'));
+  }
+
+  public function confirm_order_get() {
+    require_once('mdsc_deps.php');
+    $ppid = $_REQUEST['ppid'];
   }
 
   public function nudgedb_ajax() {
@@ -132,7 +147,6 @@ class SweetMoRegistration {
   public function preview_order_post() {
     require_once('mdsc_deps.php');
     $input = MDSC_Hacks::get_real_post();
-    //wp_send_json_success($input);
     $desc = $this->describe_order($input);
     wp_send_json_success($desc->to_client());
   }
@@ -141,8 +155,78 @@ class SweetMoRegistration {
    * Create the paypal order for the given order id
    */
   public function create_order_post() {
+    require_once('mdsc_deps.php');
+    $input = MDSC_Hacks::get_real_post();
+    $desc = $this->describe_order($input);
+    if (count($desc->errors) > 0) {
+      wp_send_json_success($desc->to_client());
+      return;
+    }
+
+    $this->create_paypal_order($desc);
+    if (count($desc->errors) > 0) {
+      wp_send_json_success($desc->to_client());
+      return;
+    }
+
+    $this->store_order($desc);
+
+    wp_send_json_success($desc->to_client());
   }
 
+  private function store_order($desc) {
+    global $wpdb;
+    $sql .= "id INT NOT NULL AUTO_INCREMENT,\n";
+    $sql .= "created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n";
+    $sql .= "updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n";
+    $sql .= "status VARCHAR(127) NOT NULL,\n";
+    $sql .= "firstname VARCHAR(127) NOT NULL,\n";
+    $sql .= "lastname VARCHAR(127) NOT NULL,\n";
+    $sql .= "email VARCHAR(127) NOT NULL,\n";
+    $sql .= "order_body TEXT NOT NULL,\n";
+    $sql .= "order_summary TEXT NOT NULL,\n";
+    $sql .= "price DECIMAL(6,2) NOT NULL,\n";
+
+    $data = array(
+      'status' => 'unpaid',
+      'firstname' => $desc->firstname,
+      'lastname' => $desc->lastname,
+      'email' => $desc->email,
+      'order_body' => json_encode($desc->order),
+      'order_summary' => $desc->format_line_items(),
+      'price' => $desc->sum_price(),
+      'ppid' => $desc->ppid
+    );
+    $formats = array(
+      '%s', // status
+      '%s', // firstname
+      '%s', // lastname
+      '%s', // email
+      '%s', // order_body
+      '%s', // order_summary
+      '%f', // price
+      '%s', // ppid
+    );
+    $rv = $wpdb->insert(
+      $wpdb->prefix . "_sweetmo_registrations",
+      $data,
+      $formats
+    );
+
+    if ($rv !== 1) {
+      $desc->add_error("Unable to save your order. Please try again.");
+    } else {
+      $desc->id = $wpdb->insert_id;
+      $desc->status = "unpaid";
+    }
+  }
+
+  private function create_paypal_order($desc) {
+    // TODO
+    // set $desc->ppid if successful
+    // or set $desc->errors if not
+    $desc->ppid = "doesnotexist";
+  }
 
   /**
    * When the registration page sends an initial post
@@ -533,7 +617,9 @@ class SweetMoRegistration {
     $sql .= "order_body TEXT NOT NULL,\n";
     $sql .= "order_summary TEXT NOT NULL,\n";
     $sql .= "price DECIMAL(6,2) NOT NULL,\n";
-    $sql .= "PRIMARY KEY  (id)\n";
+    $sql .= "ppid VARCHAR(255) NOT NULL,\n";
+    $sql .= "PRIMARY KEY (id)\n";
+    $sql .= "KEY (ppid)\n";
     $sql .= ") " . $wpdb->get_charset_collate() . ";";
 
     dbDelta($sql);
