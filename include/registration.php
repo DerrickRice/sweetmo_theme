@@ -27,8 +27,10 @@ class OrderDescription {
   public function format_line_items() {
     $rv = "";
     foreach ( $this->lineitems as $item ) {
-      $rv .= "{$item['desc']} : $ {$item['price']}\n";
+      $rv .= sprintf("%s : $ %.2f\n", $item['desc'], $item['price']);
     }
+
+    $rv .= "\nTOTAL : $ " . sprintf("%.2f", $this->sum_price());
     return $rv;
   }
 
@@ -158,7 +160,6 @@ class SweetMoRegistration {
     $subject = "Your Sweet Molasses Blues receipt";
     $message = "This is your receipt for your registration for Sweet Molasses Blues.\n\n";
     $message .= $order_summary;
-    $message .= "\n\nTOTAL: \$" . sprintf("%.2f", $order_price);
     $message .= "\n\nFor any questions about this order, please email registration@sweetmolassesblues.com";
 
     wp_mail($email, $subject, $message);
@@ -212,6 +213,7 @@ class SweetMoRegistration {
     require_once('mdsc_deps.php');
     $input = MDSC_Hacks::get_real_post();
     $desc = $this->describe_order($input);
+    $desc->status = "unpaid";
     if (count($desc->errors) > 0) {
       wp_send_json_success($desc->to_client());
       return;
@@ -223,6 +225,18 @@ class SweetMoRegistration {
       return;
     }
 
+    if ($desc->ppid === "free") {
+      $desc->status = "confirmed";
+      try {
+        $this->email_confirmation(
+          $desc->format_line_items(),
+          $desc->sum_price(),
+          $desc->email);
+      } catch(Exception $e) {
+        error_log($e->getMessage());
+      }
+    }
+
     $this->store_order($desc);
 
     wp_send_json_success($desc->to_client());
@@ -230,19 +244,9 @@ class SweetMoRegistration {
 
   private function store_order($desc) {
     global $wpdb;
-    $sql .= "id INT NOT NULL AUTO_INCREMENT,\n";
-    $sql .= "created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,\n";
-    $sql .= "updated TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,\n";
-    $sql .= "status VARCHAR(127) NOT NULL,\n";
-    $sql .= "firstname VARCHAR(127) NOT NULL,\n";
-    $sql .= "lastname VARCHAR(127) NOT NULL,\n";
-    $sql .= "email VARCHAR(127) NOT NULL,\n";
-    $sql .= "order_body TEXT NOT NULL,\n";
-    $sql .= "order_summary TEXT NOT NULL,\n";
-    $sql .= "price DECIMAL(6,2) NOT NULL,\n";
 
     $data = array(
-      'status' => 'unpaid',
+      'status' => $desc->status,
       'firstname' => $desc->firstname,
       'lastname' => $desc->lastname,
       'email' => $desc->email,
@@ -276,6 +280,11 @@ class SweetMoRegistration {
   }
 
   private function create_paypal_order($desc) {
+    if ($desc->sum_price() < 0.10) {
+      $desc->ppid = "free";
+      return;
+    }
+
     $paypal_client = $this->paypal_client();
     if ($paypal_client === null) {
       $desc->add_error("Server error. Paypal is not configured.");
@@ -356,7 +365,6 @@ class SweetMoRegistration {
     $this->_describe_comp($order, $desc);
     $this->_describe_choreo_comp($order, $desc);
     $this->_describe_shirt($order, $desc);
-    $this->_describe_food($order, $desc);
     $this->_describe_housing($order, $desc);
     $this->_describe_volunteering($order, $desc);
     $this->_describe_policies($order, $desc);
@@ -595,7 +603,41 @@ class SweetMoRegistration {
   }
 
   private function _describe_choreo_comp($order, $desc) {
-    // TODO
+    $selection = $this->safe_fetch($order, 'choreo', 'type', 'is_string');
+
+    $print_name = "Competition (Choreo)";
+    $schema = "choreos";
+    $data = $this->_get_published_choice($print_name, $schema, $selection, $desc);
+    if ($data === null) {
+      // error added by _get_published_choice
+      return;
+    }
+
+    $line_desc = $data['longname'];
+
+    if ($data['id'] !== 'none') {
+      $v = $this->safe_fetch($order, 'comp', 'people', 'is_string');
+      if (empty($v)) {
+        $desc->add_error("$print_name: Please indicate who is in the piece.");
+      }
+
+      $v = $this->safe_fetch($order, 'comp', 'song', 'is_string');
+      if (empty($v)) {
+        $desc->add_error("$print_name: Please indicate the name of the song.");
+      }
+
+      $v = $this->safe_fetch($order, 'comp', 'musician', 'is_string');
+      if (empty($v)) {
+        $desc->add_error("$print_name: Please indicate the musician.");
+      }
+
+      $v = $this->safe_fetch($order, 'comp', 'link', 'is_string');
+      if (empty($v)) {
+        $desc->add_error("$print_name: Please provide a link to a video.");
+      }
+    }
+
+    $desc->add_line_item("$print_name: $line_desc", $data['price']);
   }
 
   private function _describe_comp($order, $desc) {

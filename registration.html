@@ -82,6 +82,35 @@
             <option value="lead">Lead</option>
           </select>
         </div>
+        <hr/>
+        <div>[smb_include]reg.choreo.top[/smb_include]</div>
+        <div class="form-group">
+          <label for="choreoSelect">Do you want to enter the choreography choreoetition?</label><br/>
+          <select ng-model="input.choreo.type" required id="choreoSelect">
+            <option ng-repeat="choreo_iter in data.choreos" ng-value="choreo_iter.id">{{choreo_iter.longname}} $ {{choreo_iter.price}}</option>
+          </select>
+        </div>
+        <div ng-repeat="ccomp_iter in data.choreos" ng-show="input.choreo.type===ccomp_iter.id">
+          <ng-bind-html ng-bind-html="ccomp_iter.content"></ng-bind-html>
+        </div>
+        <div ng-show="input.choreo.type && input.choreo.type != 'none'">
+          <div class="form-group">
+            <label for="choreopeople">Names of people involved in the piece:</label><br/>
+            <input type="text" class="form-control" id="choreopeople" ng-model="input.choreo.people" ng-required="input.choreo.type && input.choreo.type != 'none'" />
+          </div>
+          <div class="form-group">
+            <label for="choreosong">Name of song</label><br/>
+            <input type="text" class="form-control" id="choreosong" ng-model="input.choreo.song" ng-required="input.choreo.type && input.choreo.type != 'none'" />
+          </div>
+          <div class="form-group">
+            <label for="choreomusician">Name of musician</label><br/>
+            <input type="text" class="form-control" id="choreomusician" ng-model="input.choreo.musician" ng-required="input.choreo.type && input.choreo.type != 'none'" />
+          </div>
+          <div class="form-group">
+            <label for="choreolink">Link to a YouTube of Vimeo upload</label><br/>
+            <input type="text" class="form-control" id="choreolink" ng-model="input.choreo.link" ng-required="input.choreo.type && input.choreo.type != 'none'" />
+          </div>
+        </div>
         <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
       </div>
     </div>
@@ -363,8 +392,14 @@
         <pre>{{preview}}</pre>
       </div>
 
-      <div class="form-group" ng-show="ShowPaypal()">
+      <div class="form-group" ng-show="ShowPaypal() && !freebie">
+        <div>Complete your order with PayPal</div>
         <div id="paypal-button-container"></div>
+      </div>
+
+      <div class="form-group" ng-show="ShowPaypal() && freebie">
+        <div>Your order is free! To complete, please click:</div>
+        <div class="btn btn-primary my-2" ng-click="CreateOrder()">Submit (Free) Order</div>
       </div>
 
       <div ng-show="ShowThanks()" style="font-weight:bold;">
@@ -552,12 +587,14 @@ angular.module('checklist-model', [])
 
 var passes = [mdsc_json_list id="passes" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 var comps = [mdsc_json_list id="comps" filter_by="published" order_by="sort_id"][/mdsc_json_list];
+var choreos = [mdsc_json_list id="choreos" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 var shirts = [mdsc_json_list id="shirts" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 
 var regApp = angular.module('regApp',['ngStorage', 'checklist-model']);
 
 regApp.controller('RegistrationController', function($scope, $sce, $sessionStorage, $http) {
   $scope.ppid = "";
+  $scope.freebie = false;
   $scope.preview_data = {};
   $scope.preview = "";
   $scope.errors = [];
@@ -566,6 +603,12 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
   $scope.data.passes = jQuery.extend(true, [], passes);
 
   jQuery.each($scope.data.passes, function(index, value) {
+    value.content = $sce.trustAsHtml(value.content);
+  });
+
+  $scope.data.choreos = jQuery.extend(true, [], choreos);
+
+  jQuery.each($scope.data.choreos, function(index, value) {
     value.content = $sce.trustAsHtml(value.content);
   });
 
@@ -659,8 +702,27 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     return ': $ ' + $scope.FetchPrice($scope.data.passes, $scope.input.pass.type);
   };
   $scope.CompTitle = function() {
+    var parts = [];
+    var v = $scope.CompTitleA();
+    if (v.length > 0) {
+      parts.push(v);
+    }
+    var v = $scope.CompTitleB();
+    if (v.length > 0) {
+      parts.push(v);
+    }
+    if (parts.length == 0) {
+      return '';
+    }
+    return ': ' + parts.join(" + ");
+  };
+  $scope.CompTitleA = function() {
     if (! $scope.input.comp || ! $scope.input.comp.type) { return ''; }
-    return ': $ ' + $scope.FetchPrice($scope.data.comps, $scope.input.comp.type);
+    return '$ ' + $scope.FetchPrice($scope.data.comps, $scope.input.comp.type);
+  };
+  $scope.CompTitleB = function() {
+    if (! $scope.input.choreo || ! $scope.input.choreo.type) { return ''; }
+    return '$ ' + $scope.FetchPrice($scope.data.choreos, $scope.input.choreo.type);
   };
   $scope.ShirtTitle = function() {
     if (! $scope.input.shirt || ! $scope.input.shirt.type) { return ''; }
@@ -712,6 +774,7 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     $scope.errors = [];
     $scope.preview = "";
     $scope.preview_data = data;
+    $scope.freebie = false;
 
     if (response.status >= 500 && response.status < 600) {
       $scope.errors.push("Internal server error. Please try again. For persistent errors, please inform registration@sweetmolassesblues.com");
@@ -731,6 +794,12 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
 
     try {
       $scope.preview = response.data.data.summary;
+    } catch(err) {
+      $scope.errors.push("Internal error: " + err.message);
+    }
+
+    try {
+      $scope.freebie = (response.data.data.price < 0.10);
     } catch(err) {
       $scope.errors.push("Internal error: " + err.message);
     }
@@ -770,6 +839,10 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
       }
 
       console.log("CreateOrder -> ppid = " + ppid);
+
+      if (ppid === "free") {
+        $scope.ppid = ppid;
+      }
       return ppid;
     };
 
