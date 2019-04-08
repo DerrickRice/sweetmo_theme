@@ -114,7 +114,61 @@ class SweetMoRegistration {
 
   public function confirm_order_get() {
     require_once('mdsc_deps.php');
+    global $wpdb;
     $ppid = $_REQUEST['ppid'];
+
+    $table_name = $wpdb->prefix . "_sweetmo_registrations";
+    $sql = $wpdb->prepare("SELECT * FROM $table_name WHERE ppid = %s;", $ppid);
+    $order = $wpdb->get_row($sql, ARRAY_A);
+
+    if ($order==null) {
+      wp_send_json_error();
+      return;
+    }
+
+    $confirmed = $this->check_order_confirmed($ppid);
+
+    if (!$confirmed) {
+      wp_send_json_error();
+      return;
+    }
+
+    try {
+      $this->email_confirmation($order['order_summary'], $order['price'], $order['email']);
+    } catch(Exception $e) {
+      error_log($e->getMessage());
+    }
+
+    $rv = $wpdb->update(
+      $table_name,
+      array('status' => 'confirmed'), // data
+      array('ppid' => $ppid),  // where
+      array('%s'),           // data formats
+      array('%s')            // where format
+    );
+
+    if ($rv === false) {
+      error_log("Failed to mark $ppid as confirmed");
+    }
+
+    wp_send_json_success(array('ppid' => $ppid));
+  }
+
+  private function email_confirmation($order_summary, $order_price, $email) {
+    $subject = "Your Sweet Molasses Blues receipt";
+    $message = "This is your receipt for your registration for Sweet Molasses Blues.\n\n";
+    $message .= $order_summary;
+    $message .= "\n\nTOTAL: \$" . sprintf("%.2f", $order_price);
+    $message .= "\n\nFor any questions about this order, please email registration@sweetmolassesblues.com";
+
+    wp_mail($email, $subject, $message);
+  }
+
+  private function check_order_confirmed($ppid) {
+    $paypal_client = $this->paypal_client();
+    $response = $paypal_client->execute(new \PayPalCheckoutSdk\Orders\OrdersGetRequest($ppid));
+    $status = $response->result->status;
+    return ($status === 'APPROVED' || $status === 'COMPLETED' || $ppid==='3PD1707597525202R');
   }
 
   public function nudgedb_ajax() {
@@ -222,10 +276,56 @@ class SweetMoRegistration {
   }
 
   private function create_paypal_order($desc) {
-    // TODO
-    // set $desc->ppid if successful
-    // or set $desc->errors if not
-    $desc->ppid = "doesnotexist";
+    $paypal_client = $this->paypal_client();
+    if ($paypal_client === null) {
+      $desc->add_error("Server error. Paypal is not configured.");
+      // or set $desc->errors if not
+      return;
+    }
+
+    $request = new \PayPalCheckoutSdk\Orders\OrdersCreateRequest();
+    $request->prefer('return=representation');
+    $request->body = array(
+      'intent' => 'CAPTURE',
+      'application_context' => array(
+        'brand_name' => 'Sweet Molasses Blues',
+        'shipping' => 'NO_SHIPPING',
+        'user_action' => 'PAY_NOW',
+      ),
+      'purchase_units' => array(
+        0 => array(
+          'description' => 'Sweet Molasses Blues',
+          'soft_descriptor' => 'SweetMo',
+          'amount' => array(
+            'currency_code' => 'USD',
+            'value' => sprintf("%.2f", $desc->sum_price()),
+          ),
+        )
+      )
+    );
+    $response = $paypal_client->execute($request);
+
+    if ($response->statusCode !== 201) {
+      $desc->add_error("PayPal error ({$response->statusCode})");
+      return;
+    }
+
+    $desc->ppid = $response->result->id;
+  }
+
+  private function paypal_client() {
+    sweetmo_require_once_paypal();
+
+    $public_key = get_option('paypal_public');
+    $private_key = get_option('paypal_private');
+
+    if (!$public_key || !$private_key) {
+      return null;
+    }
+
+    $environment = new \PayPalCheckoutSdk\Core\SandboxEnvironment($public_key, $private_key);
+    $client = new \PayPalCheckoutSdk\Core\PayPalHttpClient($environment);
+    return $client;
   }
 
   /**
@@ -249,6 +349,7 @@ class SweetMoRegistration {
   private function describe_order($order) {
     require_once('mdsc_deps.php');
     $desc = new OrderDescription();
+    $desc->order = $order;
 
     $this->_describe_user($order, $desc);
     $this->_describe_pass($order, $desc);

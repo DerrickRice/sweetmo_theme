@@ -389,7 +389,8 @@
       </div>
 
       <div ng-show="ShowThanks()" style="font-weight:bold;">
-        Your order (#{{ppid}}) has been completed. You should receive an email receipt soon. For any questions about your registration, please contact registration@sweetmolassesblues.com.
+        Your order (#{{ppid}}) has been completed. You should receive an email receipt soon. For any questions about your registration, please contact registration@sweetmolassesblues.com.<br/>
+        <br/>To make another order, please reload the page.
       </div>
     </div>
   </div>
@@ -720,8 +721,24 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     }
   };
 
+  $scope.UpdateUiOrderConfirm = function(response) {
+    console.log(response);
+    $scope.errors = [];
+    var errmsg = "There was an error confirming your order. You have already been charged. Please contact registration@sweetmolassesblues.com";
+
+    if (response.status >= 400 && response.status < 600) {
+      $scope.errors.push(errmsg);
+      return;
+    }
+
+    try {
+      $scope.ppid = response.data.data.ppid;
+    } catch(err) {
+      $scope.errors.push(errmsg);
+    }
+  }
+
   $scope.UpdateUi = function(response, data) {
-    // TODO: remove console.log
     console.log(response);
 
     $scope.errors = [];
@@ -795,7 +812,7 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
     window.alert("Confirming order_id" + order_id);
     var cfg = {'params': {'action': 'smbconfirm', 'ppid': order_id} };
     var cb = function(response) {
-      $scope.UpdateUi(response, data);
+      $scope.UpdateUiOrderConfirm(response, data);
     };
 
     return $http.get(ajaxurl, cfg).then(cb,cb);

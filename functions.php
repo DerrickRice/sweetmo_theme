@@ -38,6 +38,11 @@ function sweetmo_theme_setup() {
   sweetmo_setup_shortcodes();
 }
 
+function sweetmo_require_once_paypal() {
+  require_once('lib/PayPalCheckoutSdk/autoload.php');
+  require_once('lib/BraintreeHttp/autoload.php');
+}
+
 add_action( 'after_setup_theme', 'sweetmo_theme_setup', 11 );
 
 function sweetmo_admin_ajax() {
