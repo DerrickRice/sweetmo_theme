@@ -111,27 +111,6 @@
             <option ng-value="sz" ng-repeat="sz in ShirtSizes()">{{sz}}</option>
           </select>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseFood" aria-controls="collapseFood">Next</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <!-- TODO -->
-    <div class="card-header" id="headingFood" data-toggle="collapse" data-target="#collapseFood" aria-expanded="false" aria-controls="collapseFood">
-      <h3>Sunday Dinner{{FoodTitle()}}</h3>
-    </div>
-    <div id="collapseFood" class="collapse" aria-labelledby="headingFood" data-parent="#regWorkflow">
-      <div class="card-body">
-        <div>[smb_include]reg.food.top[/smb_include]</div>
-        <div class="form-group">
-          <select ng-model="input.food.type" required id="foodSelect">
-            <option ng-repeat="food_iter in data.food" ng-value="food_iter.id">{{food_iter.longname}} $ {{food_iter.price}}</option>
-          </select>
-        </div>
-        <div ng-repeat="food_iter in data.food" ng-show="input.food.type==food_iter.id">
-          <ng-bind-html ng-bind-html="pass_iter.content"></ng-bind-html>
-        </div>
         <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
       </div>
     </div>
@@ -574,7 +553,6 @@ angular.module('checklist-model', [])
 var passes = [mdsc_json_list id="passes" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 var comps = [mdsc_json_list id="comps" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 var shirts = [mdsc_json_list id="shirts" filter_by="published" order_by="sort_id"][/mdsc_json_list];
-var food = [mdsc_json_list id="food" filter_by="published" order_by="sort_id"][/mdsc_json_list];
 
 var regApp = angular.module('regApp',['ngStorage', 'checklist-model']);
 
@@ -594,12 +572,6 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
   $scope.data.comps = jQuery.extend(true, [], comps);
 
   jQuery.each($scope.data.comps, function(index, value) {
-    value.content = $sce.trustAsHtml(value.content);
-  });
-
-  $scope.data.food = jQuery.extend(true, [], food);
-
-  jQuery.each($scope.data.food, function(index, value) {
     value.content = $sce.trustAsHtml(value.content);
   });
 
@@ -693,10 +665,6 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
   $scope.ShirtTitle = function() {
     if (! $scope.input.shirt || ! $scope.input.shirt.type) { return ''; }
     return ': $ ' + $scope.FetchPrice($scope.data.shirts, $scope.input.shirt.type);
-  };
-  $scope.FoodTitle = function() {
-    if (! $scope.input.food || ! $scope.input.food.type) { return ''; }
-    return ': $ ' + $scope.FetchPrice($scope.data.food, $scope.input.food.type);
   };
   $scope.HouseTitle = function() {
     if (! $scope.input.house || ! $scope.input.house.type) { return ''; }
