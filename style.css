@@ -8025,87 +8025,6 @@ a.text-dark:hover, a.text-dark:focus {
   margin-left: auto;
   margin-right: auto; }
 
-#content h2.woocommerce-loop-product__title {
-  background: none;
-  font-size: 18px;
-  padding: 0px;
-  color: #000000;
-  margin: 0.25em 0 0 0; }
-#content div.product h1.product_title {
-  color: #000000;
-  background: none;
-  border: none; }
-  #content div.product h1.product_title:before {
-    content: none; }
-#content div.product_meta {
-  display: none; }
-#content li.product {
-  display: grid;
-  grid-template-columns: 1fr; }
-  #content li.product a img {
-    margin: 0px; }
-  #content li.product .price {
-    margin: 0px; }
-  #content li.product .button {
-    text-align: center;
-    margin: 0px; }
-#content table.wccpf_fields_table td {
-  padding: 0.25em 0; }
-#content input.qty {
-  padding: .618em 1em;
-  box-sizing: border-box; }
-#content .product_cat-pass input.qty {
-  display: none; }
-#content .woocommerce-Tabs-panel h2:first-child {
-  display: none; }
-#content p.price, #content span.price {
-  color: #51968A; }
-#content .woocommerce-message {
-  border-top-color: #51968A; }
-  #content .woocommerce-message:before {
-    color: #51968A; }
-#content table.cart img {
-  margin: 0;
-  display: block;
-  width: 3em; }
-#content .woocommerce-terms-and-conditions h1, #content .woocommerce-terms-and-conditions h2, #content .woocommerce-terms-and-conditions h3, #content .woocommerce-terms-and-conditions h4, #content .woocommerce-terms-and-conditions h5 {
-  color: #000000;
-  background: none;
-  border: none;
-  padding-left: 0; }
-  #content .woocommerce-terms-and-conditions h1:before, #content .woocommerce-terms-and-conditions h2:before, #content .woocommerce-terms-and-conditions h3:before, #content .woocommerce-terms-and-conditions h4:before, #content .woocommerce-terms-and-conditions h5:before {
-    content: none; }
-#content .wccpf-fields-group-1,
-#content .wccpf-fields-group-2,
-#content .wccpf-fields-group-3,
-#content .wccpf-fields-group-4,
-#content .wccpf-fields-group-5,
-#content .wccpf-fields-group-6,
-#content .wccpf-fields-group-7 {
-  margin-bottom: 10px;
-  border-left: 3px solid #BFDCD7;
-  padding-left: 5px;
-  font-size: 14px; }
-#content .wccpf_label {
-  color: #51968A;
-  font-weight: bold; }
-#content .wccpf_fields_table.wide_field-wrapper tr,
-#content .wccpf_fields_table.wide_field tr {
-  display: grid;
-  grid-template-columns: 100%; }
-#content .wccpf_fields_table.wide_field-wrapper td,
-#content .wccpf_fields_table.wide_field td {
-  width: 100%; }
-#content .wccpf_fields_table.wide_field-wrapper label,
-#content .wccpf_fields_table.wide_field label {
-  width: 100%; }
-#content .wccpf_fields_table.narrow_field-wrapper td,
-#content .wccpf_fields_table.narrow_field td {
-  width: unset; }
-#content .wccpf_fields_table.narrow_field-wrapper label,
-#content .wccpf_fields_table.narrow_field label {
-  width: unset; }
-
 .smb_bio_card {
   display: flex;
   align-items: flex-start; }
@@ -8288,3 +8207,5 @@ a.text-dark:hover, a.text-dark:focus {
   display: none; }
 
 /* styling for workshop details */
+
+/*# sourceMappingURL=style.css.map */

@@ -20,14 +20,18 @@ class OrderDescription {
   public function add_line_item($desc, $price) {
     $this->lineitems[] = array(
       'desc' => $desc,
-      'price' => $price
+      'price' => floatval($price)
     );
   }
 
   public function format_line_items() {
     $rv = "";
     foreach ( $this->lineitems as $item ) {
-      $rv .= sprintf("%s : $ %.2f\n", $item['desc'], $item['price']);
+      if ($item['price'] === 0.0) {
+        $rv .= $item['desc'] . "\n";
+      } else {
+        $rv .= sprintf("%s ($ %.2f)\n", $item['desc'], $item['price']);
+      }
     }
 
     $rv .= "\nTOTAL : $ " . sprintf("%.2f", $this->sum_price());
@@ -112,6 +116,39 @@ class SweetMoRegistration {
     add_action(
       'wp_ajax_smbconfirm',
       array($this, 'confirm_order_get'));
+
+    add_action(
+      'wp_ajax_nopriv_smbexport',
+      array($this, 'export_get'));
+    add_action(
+      'wp_ajax_smbexport',
+      array($this, 'export_get'));
+  }
+
+  public function export_get() {
+    $password = $_REQUEST['token'];
+    $correct_password = get_option('export_token');
+    if (!$correct_password) {
+      wp_send_json_error(array('reason' => 'Password not setup'));
+      return;
+    }
+    if ($password !== $correct_password) {
+      wp_send_json_error(array('reason' => 'Incorrect password/token'));
+      return;
+    }
+
+    global $wpdb;
+    $table_name = $wpdb->prefix . "_sweetmo_registrations";
+    $data = $wpdb->get_results(
+      "SELECT * FROM $table_name ORDER BY created ASC;",
+      ARRAY_A
+    );
+
+    foreach ($data as &$value) {
+      $value['order_body'] = json_decode($value['order_body'], true);
+    }
+
+    wp_send_json_success($data);
   }
 
   public function confirm_order_get() {
@@ -183,17 +220,13 @@ class SweetMoRegistration {
         return null;
       }
 
-      if (is_callable($kf)) {
-        if (!$kf($data)) {
+      // filters are passed as single element arrays
+      if (is_array($kf)) {
+        if (!$kf[0]($data)) {
           return null;
         }
       } else {
-        if (!is_array($data)) {
-          // asked to index further, but this isn't an array
-          return null;
-        }
-
-        $data = isset($data[$kf]) ? $data[$kf] : null;
+        $data = (is_array($data) && isset($data[$kf])) ? $data[$kf] : null;
       }
     }
     return $data;
@@ -332,7 +365,13 @@ class SweetMoRegistration {
       return null;
     }
 
-    $environment = new \PayPalCheckoutSdk\Core\SandboxEnvironment($public_key, $private_key);
+    $production = get_option('paypal_production', 'no');
+    $environment = null;
+    if ($production === 'yes') {
+      $environment = new \PayPalCheckoutSdk\Core\ProductionEnvironment($public_key, $private_key);
+    } else {
+      $environment = new \PayPalCheckoutSdk\Core\SandboxEnvironment($public_key, $private_key);
+    }
     $client = new \PayPalCheckoutSdk\Core\PayPalHttpClient($environment);
     return $client;
   }
@@ -374,12 +413,49 @@ class SweetMoRegistration {
   }
 
   private function _describe_voucher($order, $desc) {
-    $vcode = $this->safe_fetch($order, 'voucher', 'is_string');
+
+    $vcode = $this->safe_fetch($order, 'voucher', array('is_string'));
     if (empty($vcode)) {
       return;
     }
 
+    if (count($desc->errors) > 0) {
+      // do not evaluate the voucher until there are no other errors.
+      return;
+    }
+
+    $vcode = strtolower($vcode);
+
     // PUT VALID VOUCHERS HERE
+    $full_pass = get_option('sweetmo_full_pass');
+    $full_pass_tshirt = get_option('sweetmo_full_pass_tshirt');
+
+    if ($vcode === $full_pass || $vcode === $full_pass_tshirt) {
+      // just a free pass
+      $pass_selection = $this->safe_fetch($order, 'pass', 'type', array('is_string'));
+      if ($pass_selection != 'eventpass.standard') {
+        $desc->add_error('Voucher: This voucher does not apply to this event pass type.');
+        return;
+      }
+      $pass_data = $this->_get_published_choice('', 'passes', $pass_selection, $desc);
+      $desc->add_line_item("Voucher $vcode: free standard event pass", -1 * $pass_data['price']);
+
+      if ($vcode === $full_pass) {
+        return;
+      }
+
+      // otherwise, free pass and tshirt
+      $shirt_selection = $this->safe_fetch($order, 'shirt', 'type', array('is_string'));
+      if ($shirt_selection === 'none') {
+        $desc->add_error('Voucher: This voucher provides a free shirt. Please select a shirt!');
+        return;
+      }
+
+      $shirt_data = $this->_get_published_choice('', 'shirts', $shirt_selection, $desc);
+      $desc->add_line_item("Voucher $vcode: free shirt", -1 * $shirt_data['price']);
+
+      return;
+    }
 
     $desc->add_error("Unrecognized voucher code: $vcode");
   }
@@ -392,7 +468,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_volunteering($order, $desc) {
-    $selection = $this->safe_fetch($order, 'volunteer', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'volunteer', 'type', array('is_string'));
     if (empty($selection)) {
       $desc->add_error("Volunteering: Please make a selection");
     } elseif ($selection !== 'no' && $selection !== 'yes') {
@@ -404,7 +480,7 @@ class SweetMoRegistration {
 
   private function _describe_housing($order, $desc) {
     $print_name = "Housing";
-    $role = $this->safe_fetch($order, 'house', 'type', 'is_string');
+    $role = $this->safe_fetch($order, 'house', 'type', array('is_string'));
     if (empty($role)) {
       $desc->add_error("$print_name: Please make a selection");
       return;
@@ -422,7 +498,7 @@ class SweetMoRegistration {
     $long_desc = array();
 
     if ($role === 'guest') {
-      $v = $this->safe_fetch($order, 'pass', 'type', 'is_string');
+      $v = $this->safe_fetch($order, 'pass', 'type', array('is_string'));
       if (!empty($v) && $v === 'none') {
         $desc->add_error("$print_name: Housing is only available to attendees purchasing an event pass. Select \"Not participating in housing\" to continue. Please contact sweetmohousing@gmail.com for more information or for help.");
         return;
@@ -430,7 +506,7 @@ class SweetMoRegistration {
     }
 
     // EITHER
-    $v = $this->safe_fetch($order, 'house', 'days', 'is_array');
+    $v = $this->safe_fetch($order, 'house', 'days', array('is_array'));
     if (empty($v) || count($v) === 0) {
       $desc->add_error("$print_name: Please select at least one night, or choose \"Not participating in housing\".");
     } else {
@@ -445,19 +521,19 @@ class SweetMoRegistration {
     }
 
     // good matches
-    $v = $this->safe_fetch($order, 'house', 'matchyes', 'is_string');
+    $v = $this->safe_fetch($order, 'house', 'matchyes', array('is_string'));
     if (!empty($v)) {
       $long_desc[] = "good matches: $v";
     }
 
     // bad matches
-    $v = $this->safe_fetch($order, 'house', 'matchno', 'is_string');
+    $v = $this->safe_fetch($order, 'house', 'matchno', array('is_string'));
     if (!empty($v)) {
       $long_desc[] = "avoid matches: $v";
     }
 
     // attending
-    $v = $this->safe_fetch($order, 'house', 'attending', 'is_array');
+    $v = $this->safe_fetch($order, 'house', 'attending', array('is_array'));
     if (empty($v) || count($v) === 0) {
       if ($role === 'guest') {
         $desc->add_error("$print_name: As a guest, please tell us what parts of the event you plan to attend.");
@@ -469,9 +545,9 @@ class SweetMoRegistration {
     }
 
     // car details
-    $v = $this->safe_fetch($order, 'house', 'car', 'is_string');
+    $v = $this->safe_fetch($order, 'house', 'car', array('is_string'));
     if (!empty($v) && $v === 'yes') {
-      $v = $this->safe_fetch($order, 'house', 'carseats', 'is_numeric');
+      $v = $this->safe_fetch($order, 'house', 'carseats', array('is_numeric'));
       if ($v !== 0 && $v !== "0" && empty($v)) {
         $desc->add_error("$print_name: Please indicate how many seats are available in your car. 0 is permitted.");
 
@@ -489,13 +565,13 @@ class SweetMoRegistration {
     // GUESTS ONLY
     if ($role === 'guest') {
       // allergies
-      $v = $this->safe_fetch($order, 'house', 'avoid', 'is_array');
+      $v = $this->safe_fetch($order, 'house', 'avoid', array('is_array'));
       if (!empty($v)) {
         $long_desc[] = "avoid: " . implode(", ", $v);
       }
 
       // allergies
-      $v = $this->safe_fetch($order, 'house', 'alsoavoid', 'is_array');
+      $v = $this->safe_fetch($order, 'house', 'alsoavoid', array('is_array'));
       if (!empty($v)) {
         $long_desc[] = "also avoid: $v";
       }
@@ -504,7 +580,7 @@ class SweetMoRegistration {
     // HOSTS ONLY
     if ($role === 'host') {
       // address
-      $v = $this->safe_fetch($order, 'house', 'address', 'is_string');
+      $v = $this->safe_fetch($order, 'house', 'address', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: as a host, please provide your address");
       } else {
@@ -512,7 +588,7 @@ class SweetMoRegistration {
       }
 
       // num guests
-      $v = $this->safe_fetch($order, 'house', 'guestcount', 'is_numeric');
+      $v = $this->safe_fetch($order, 'house', 'guestcount', array('is_numeric'));
       if ($v !== 0 && $v !== "0" && empty($v)) {
         $desc->add_error("$print_name: as a host, please provide a number of guests");
       } else {
@@ -525,7 +601,7 @@ class SweetMoRegistration {
       }
 
       // num parking
-      $v = $this->safe_fetch($order, 'house', 'parking', 'is_numeric');
+      $v = $this->safe_fetch($order, 'house', 'parking', array('is_numeric'));
       if ($v !== 0 && $v !== "0" && empty($v)) {
         $desc->add_error("$print_name: as a host, please provide a number of parking spaces");
       } else {
@@ -537,13 +613,13 @@ class SweetMoRegistration {
         }
       }
 
-      $v = $this->safe_fetch($order, 'house', 'sleeping', 'is_string');
+      $v = $this->safe_fetch($order, 'house', 'sleeping', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: as a host, please describe the sleeping arrangements");
       }
 
       // allergies
-      $v = $this->safe_fetch($order, 'house', 'allergens', 'is_array');
+      $v = $this->safe_fetch($order, 'house', 'allergens', array('is_array'));
       if (!empty($v)) {
         $long_desc[] = "allergens: " . implode(", ", $v);
       }
@@ -556,7 +632,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_food($order, $desc) {
-    $selection = $this->safe_fetch($order, 'food', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'food', 'type', array('is_string'));
 
     $print_name = "Sunday Dinner";
     $schema = "food";
@@ -571,7 +647,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_shirt($order, $desc) {
-    $selection = $this->safe_fetch($order, 'shirt', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'shirt', 'type', array('is_string'));
 
     $print_name = "Shirt";
     $schema = "shirts";
@@ -584,7 +660,7 @@ class SweetMoRegistration {
     $line_desc = $data['longname'];
 
     if ($data['id'] !== 'none') {
-      $size = $this->safe_fetch($order, 'shirt', 'size', 'is_string');
+      $size = $this->safe_fetch($order, 'shirt', 'size', array('is_string'));
       if (empty($size)) {
         $desc->add_error("$print_name: Please make a size selection");
         return;
@@ -603,7 +679,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_choreo_comp($order, $desc) {
-    $selection = $this->safe_fetch($order, 'choreo', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'choreo', 'type', array('is_string'));
 
     $print_name = "Competition (Choreo)";
     $schema = "choreos";
@@ -616,22 +692,23 @@ class SweetMoRegistration {
     $line_desc = $data['longname'];
 
     if ($data['id'] !== 'none') {
-      $v = $this->safe_fetch($order, 'comp', 'people', 'is_string');
+      $v = $this->safe_fetch($order, 'choreo', 'people', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: Please indicate who is in the piece.");
       }
 
-      $v = $this->safe_fetch($order, 'comp', 'song', 'is_string');
+      $v = $this->safe_fetch($order, 'choreo', 'song', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: Please indicate the name of the song.");
       }
 
-      $v = $this->safe_fetch($order, 'comp', 'musician', 'is_string');
+      $v = $this->safe_fetch($order, 'choreo', 'musician', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: Please indicate the musician.");
       }
 
-      $v = $this->safe_fetch($order, 'comp', 'link', 'is_string');
+      # FIXME: 'link' is callable. Need to turn filters into arrays.
+      $v = $this->safe_fetch($order, 'choreo', 'link', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: Please provide a link to a video.");
       }
@@ -641,7 +718,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_comp($order, $desc) {
-    $selection = $this->safe_fetch($order, 'comp', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'comp', 'type', array('is_string'));
 
     $print_name = "Competition";
     $schema = "comps";
@@ -654,7 +731,7 @@ class SweetMoRegistration {
     $line_desc = $data['longname'];
 
     if ($data['id'] !== 'none') {
-      $v = $this->safe_fetch($order, 'comp', 'role', 'is_string');
+      $v = $this->safe_fetch($order, 'comp', 'role', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: Please make a role selection.");
         return;
@@ -670,7 +747,7 @@ class SweetMoRegistration {
   }
 
   private function _describe_pass($order, $desc) {
-    $selection = $this->safe_fetch($order, 'pass', 'type', 'is_string');
+    $selection = $this->safe_fetch($order, 'pass', 'type', array('is_string'));
 
     $print_name = "Event Pass";
     $schema = "passes";
@@ -681,7 +758,7 @@ class SweetMoRegistration {
     }
 
     if (!empty($data['code'])) {
-      $v = $this->safe_fetch($order, 'pass', 'code', 'is_string');
+      $v = $this->safe_fetch($order, 'pass', 'code', array('is_string'));
       if (empty($v)) {
         $desc->add_error("$print_name: The selected pass requires an approval code. Please read the description carefully and try again.");
         return;
@@ -719,21 +796,21 @@ class SweetMoRegistration {
 
   private function _describe_user($order, $desc) {
     // validate about you
-    $v = $this->safe_fetch($order, 'user', 'firstname', 'is_string');
+    $v = $this->safe_fetch($order, 'user', 'firstname', array('is_string'));
     if (empty($v)) {
       $desc->add_error("About You: first name is required.");
     } else {
       $desc->firstname = $v;
     }
 
-    $v = $this->safe_fetch($order, 'user', 'lastname', 'is_string');
+    $v = $this->safe_fetch($order, 'user', 'lastname', array('is_string'));
     if (empty($v)) {
       $desc->add_error("About You: last name is required.");
     } else {
       $desc->lastname = $v;
     }
 
-    $v = $this->safe_fetch($order, 'user', 'email', 'is_string');
+    $v = $this->safe_fetch($order, 'user', 'email', array('is_string'));
     if (empty($v)) {
       $desc->add_error("About You: email is required.");
     } elseif (!filter_var($v, FILTER_VALIDATE_EMAIL)) {
@@ -762,7 +839,7 @@ class SweetMoRegistration {
     $sql .= "price DECIMAL(6,2) NOT NULL,\n";
     $sql .= "ppid VARCHAR(255) NOT NULL,\n";
     $sql .= "PRIMARY KEY (id)\n";
-    $sql .= "KEY (ppid)\n";
+    $sql .= "KEY ppidkey (ppid)\n";
     $sql .= ") " . $wpdb->get_charset_collate() . ";";
 
     dbDelta($sql);

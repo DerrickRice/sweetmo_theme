@@ -6,13 +6,13 @@
 <!-- https://getbootstrap.com/ -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
-<script src="https://www.paypal.com/sdk/js?client-id=AfplibUzvHYJ017glTsvvj1iMGCGI0zK2AiVpoK_NRGCu5C-peXsmgShux8MGNBIxlk341nbGFw4drvK"></script>
+<script src="https://www.paypal.com/sdk/js?client-id=AY-HAGIUJb7gcXgMSiQ83jaqabyqpFexZN-lhR1Jt0spArUdhXoxxIX1e25d6x2_JDMgUH2R-uUsF1iH"></script>
 
 <div class="alert alert-info">For any problems or questions about registration, please email <a href="mailto:registration@sweetmolassesblues.com?subject=SweetMo%20Registration%20Question">registration@sweetmolassesblues.com</a></div>
 
 <!-- do not change the id - the paypal integration looks for it -->
 <div class="accordion" id="regWorkflow" ng-app="regApp" ng-controller="RegistrationController">
-  <div class="btn btn-warning my-2" ng-click="Reset()">Clear All Fields</div>
+  <button type="button" class="btn btn-warning my-2" ng-click="Reset()">Clear All Fields</button>
 
   <div class="card">
     <div class="card-header" id="headingYou" data-toggle="collapse" data-target="#collapseYou" aria-expanded="true" aria-controls="collapseYou">
@@ -27,7 +27,11 @@
           <small id="emailHelp" class="form-text text-muted">For your receipt and updates about the event.</small>
         </div>
         <input type="text" class="form-control" ng-model="input.user.scene" id="sceneField" placeholder="Home Scene (optional)" />
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePass" aria-controls="collapsePass">Next</div>
+        <div class="form-group">
+          <label for="supportNeeds">[smb_include]reg.user.support[/smb_include]</label><br/>
+          <input type="text" class="form-control" ng-model="input.user.support" id="supportNeeds" placeholder="(optional)" />
+        </div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePass" aria-controls="collapsePass">Next</button>
       </div>
     </div>
   </div>
@@ -54,7 +58,7 @@
             <small id="passCodeHelp" class="form-text text-muted">See the description, above, for the code.</small>
           </div>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComp" aria-controls="collapseComp">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComp" aria-controls="collapseComp">Next</button>
       </div>
     </div>
   </div>
@@ -85,7 +89,7 @@
         <hr/>
         <div>[smb_include]reg.choreo.top[/smb_include]</div>
         <div class="form-group">
-          <label for="choreoSelect">Do you want to enter the choreography choreoetition?</label><br/>
+          <label for="choreoSelect">Do you want to enter the choreography competition?</label><br/>
           <select ng-model="input.choreo.type" required id="choreoSelect">
             <option ng-repeat="choreo_iter in data.choreos" ng-value="choreo_iter.id">{{choreo_iter.longname}} $ {{choreo_iter.price}}</option>
           </select>
@@ -111,7 +115,7 @@
             <input type="text" class="form-control" id="choreolink" ng-model="input.choreo.link" ng-required="input.choreo.type && input.choreo.type != 'none'" />
           </div>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseSwag" aria-controls="collapseSwag">Next</button>
       </div>
     </div>
   </div>
@@ -140,7 +144,7 @@
             <option ng-value="sz" ng-repeat="sz in ShirtSizes()">{{sz}}</option>
           </select>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseHouse" aria-controls="collapseHouse">Next</button>
       </div>
     </div>
   </div>
@@ -322,7 +326,7 @@
               id="q_moreinfo"/>
         </div>
 
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseVolunteer" aria-controls="collapseVolunteer">Next</button>
       </div>
     </div>
   </div>
@@ -342,7 +346,7 @@
           </select>
           <div>[smb_include]reg.volunteer.bottom[/smb_include]</div>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapsePolicies" aria-controls="collapsePolicies">Next</button>
       </div>
     </div>
   </div>
@@ -354,11 +358,14 @@
     <div id="collapsePolicies" class="collapse" aria-labelledby="headingPolicies" data-parent="#regWorkflow">
       <div class="card-body">
         <div>[smb_include]reg.policies.top[/smb_include]</div>
+        <div>[smb_include]reg.policies.etiquette[/smb_include]</div>
+        <div>[smb_include]reg.policies.liability[/smb_include]</div>
+        <div>[smb_include]reg.policies.photo[/smb_include]</div>
         <div class="form-group">
           <input type="checkbox" id="acceptPolicies" required value="yes" ng-model="input.policies.accepted"></input>
           <label for="acceptPolicies">[smb_include]reg.policies.accept[/smb_include]</label>
         </div>
-        <div class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</div>
+        <button type="button" class="btn btn-primary my-2" data-toggle="collapse" data-target="#collapseComplete" aria-controls="collapseComplete">Next</button>
       </div>
     </div>
   </div>
@@ -376,7 +383,7 @@
         <!-- summary -->
         <!-- button -->
         <div class="form-group" ng-show="!ShowThanks()">
-          <div class="btn btn-primary my-2" ng-click="Preview()">Review Order</div>
+          <button type="button" class="btn btn-primary my-2" ng-click="Preview()">Review Order</button>
         </div>
 
         <div class="alert alert-danger" ng-show="HasErrors()">
@@ -399,7 +406,7 @@
 
       <div class="form-group" ng-show="ShowPaypal() && freebie">
         <div>Your order is free! To complete, please click:</div>
-        <div class="btn btn-primary my-2" ng-click="CreateOrder()">Submit (Free) Order</div>
+        <button type="button" class="btn btn-primary my-2" ng-click="CreateOrder()">Submit (Free) Order</button>
       </div>
 
       <div ng-show="ShowThanks()" style="font-weight:bold;">
@@ -698,9 +705,12 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
   };
 
   $scope.PassTitle = function() {
-    if (! $scope.input.pass || ! $scope.input.pass.type) { return ''; }
-    return ': $ ' + $scope.FetchPrice($scope.data.passes, $scope.input.pass.type);
+    if ($scope.input.pass && $scope.input.pass.type) {
+      return ': $ ' + $scope.FetchPrice($scope.data.passes, $scope.input.pass.type);
+    }
+    return '';
   };
+
   $scope.CompTitle = function() {
     var parts = [];
     var v = $scope.CompTitleA();
@@ -850,10 +860,9 @@ regApp.controller('RegistrationController', function($scope, $sce, $sessionStora
   };
 
   $scope.ConfirmOrder = function(order_id) {
-    window.alert("Confirming order_id" + order_id);
     var cfg = {'params': {'action': 'smbconfirm', 'ppid': order_id} };
     var cb = function(response) {
-      $scope.UpdateUiOrderConfirm(response, data);
+      $scope.UpdateUiOrderConfirm(response);
     };
 
     return $http.get(ajaxurl, cfg).then(cb,cb);
@@ -872,7 +881,7 @@ jQuery(document).ready(function() {
       return actions.order.capture().then(function(order_details) {
         var scope = angular.element(jQuery('#regWorkflow')).scope();
         return scope.$apply(function() {
-          return scope.ConfirmOrder(data.orderId);
+          return scope.ConfirmOrder(order_details.id);
         });
       });
     }
