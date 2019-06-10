@@ -1,43 +1,44 @@
 .smb_bio_card {
-	display: flex;
-	align-items: flex-start;
+  display: flex;
+  align-items: flex-start;
 
-	@include narrow {
-		display: block;
-		align-items: stretch;
-	}
+  @include narrow {
+    display: block;
+    align-items: stretch;
+  }
 
-	> img {
-		border: 1px solid $dark-background;
-		box-shadow: 5px 5px 0px 0px $theme-color;
-		max-width: 30%;
-		margin-right: 15px;
-		margin-bottom: 15px;
+  > img {
+    border: 1px solid $dark-background;
+    box-shadow: 5px 5px 0px 0px $theme-color;
+    max-width: 30%;
+    margin-right: 15px;
+    margin-bottom: 15px;
+    flex-shrink: 0;
 
-		@include narrow {
-			max-width: 100%;
-			margin-right: 5px;
-			margin-bottom: 5px;
-		}
-	}
+    @include narrow {
+      max-width: 100%;
+      margin-right: 5px;
+      margin-bottom: 5px;
+    }
+  }
 
-	> div {
-		._nom {
-			color: $darkest-color;
-			font-family: $header-font;
-			line-height: 1.4;
-			margin: 0;
-			padding: 0;
-			font-size: 30px;
-		}
+  > div {
+    ._nom {
+      color: $darkest-color;
+      font-family: $header-font;
+      line-height: 1.4;
+      margin: 0;
+      padding: 0;
+      font-size: 30px;
+    }
 
-		._role {
-			font-style: oblique;
-			margin-bottom: 10px;
-		}
+    ._role {
+      font-style: oblique;
+      margin-bottom: 10px;
+    }
 
-		._bio > p:last-child {
-			margin-bottom: 0px;
-		}
-	}
+    ._bio > p:last-child {
+      margin-bottom: 0px;
+    }
+  }
 }

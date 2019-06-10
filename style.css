@@ -5,7 +5,7 @@ GitHub Theme URI: DerrickRice/sweetmo_theme
 Author: Derrick Rice
 Author URI: http://rice.io
 Description: Specifically for SweetMolassesBlues.com
-Version: 1.11.0
+Version: 1.12.0
 License: GNU General Public License
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -8037,7 +8037,8 @@ a.text-dark:hover, a.text-dark:focus {
     box-shadow: 5px 5px 0px 0px #70ABA1;
     max-width: 30%;
     margin-right: 15px;
-    margin-bottom: 15px; }
+    margin-bottom: 15px;
+    flex-shrink: 0; }
     @media only screen and (max-width: 479px) {
       .smb_bio_card > img {
         max-width: 100%;
