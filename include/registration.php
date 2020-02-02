@@ -429,6 +429,7 @@ class SweetMoRegistration {
     // PUT VALID VOUCHERS HERE
     $full_pass = get_option('sweetmo_full_pass');
     $full_pass_tshirt = get_option('sweetmo_full_pass_tshirt');
+    $dance_pass = get_option('sweetmo_dance_pass');
 
     if ($vcode === $full_pass || $vcode === $full_pass_tshirt) {
       // just a free pass
@@ -453,6 +454,19 @@ class SweetMoRegistration {
 
       $shirt_data = $this->_get_published_choice('', 'shirts', $shirt_selection, $desc);
       $desc->add_line_item("Voucher $vcode: free shirt", -1 * $shirt_data['price']);
+
+      return;
+    }
+
+    if ($vcode === $dance_pass) {
+      $pass_selection = $this->safe_fetch($order, 'pass', 'type', array('is_string'));
+      if ($pass_selection != 'danceonly.standard') {
+        $desc->add_error('Voucher: This voucher does not apply to this event pass type.');
+        return;
+      }
+
+      $pass_data = $this->_get_published_choice('', 'passes', $pass_selection, $desc);
+      $desc->add_line_item("Voucher $vcode: free dance-only event pass", -1 * $pass_data['price']);
 
       return;
     }
@@ -560,6 +574,14 @@ class SweetMoRegistration {
       }
     } else {
       $long_desc[] = "no car";
+    }
+
+    // phone
+    $v = $this->safe_fetch($order, 'house', 'phone', array('is_string'));
+    if (empty($v)) {
+      $desc->add_error("$print_name: please provide your phone number");
+    } else {
+      $long_desc[] = "phone: $v";
     }
 
     // GUESTS ONLY

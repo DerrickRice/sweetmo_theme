@@ -40,12 +40,28 @@
         grid-template-columns: min-content 1fr;
     }
 
+    &.schedule_grid2 {
+        grid-template-columns: min-content repeat(2, 1fr);
+    }
+
+    &.schedule_grid3 {
+        grid-template-columns: min-content repeat(3, 1fr);
+    }
+
     &.schedule_grid4 {
         grid-template-columns: min-content repeat(4, 1fr);
     }
 
     .grid1col {
         grid-column-end: span 1;
+    }
+
+    .grid2col {
+        grid-column-end: span 2;
+    }
+
+    .grid3col {
+        grid-column-end: span 3;
     }
 
     .grid4col {
@@ -108,7 +124,7 @@
         .workshop_title {
             font-weight: bold;
             @include notprint {
-    	       color: $darkest-color;
+               color: $darkest-color;
                text-decoration: underline;
 
                &:hover, &:focus {

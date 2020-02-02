@@ -8,7 +8,7 @@ class Schedule {
 	private static $_js_included = array();
 	private static $_modals = array();
 	private static $_modals_emitted = array();
-	private static $_supported_grid_sizes = array('1', '4');
+	private static $_supported_grid_sizes = array('1', '2', '3', '4');
 	private static $_group = 0;
 
 	public static function new_grp_id() {

@@ -8,6 +8,14 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 <script src="https://www.paypal.com/sdk/js?client-id=AY-HAGIUJb7gcXgMSiQ83jaqabyqpFexZN-lhR1Jt0spArUdhXoxxIX1e25d6x2_JDMgUH2R-uUsF1iH"></script>
 
+<b>Important Deadlines!</b>
+<ul>
+  <li>June 30 - T-shirt pre-orders due. Additional T-shirts with a limited selection of sizes available will be sold at the door.</li>
+  <li>June 30 - Deadline for guaranteed housing signups for guests. Housing assignments will be available shortly after this deadline. Additional guests registering after June 30 can email us and we will match you with housing first-come first-served as long as we have spaces available.</li>
+  <li>July 5 - Deadline for volunteer sign ups (<a href="https://forms.gle/pK7HrKGHMtZ3xrNX6" target="_blank" rel="noopener noreferrer">sign up sheet here</a>)</li>
+  <li>July 23 at 11:59pm - Online registration closes. Afterwards full weekend passes (3rd and 4th tier), dance only, and a la carte dances/workshops will be available at the door!</li>
+</ul>
+
 <div class="alert alert-info">For any problems or questions about registration, please email <a href="mailto:registration@sweetmolassesblues.com?subject=SweetMo%20Registration%20Question">registration@sweetmolassesblues.com</a></div>
 
 <!-- do not change the id - the paypal integration looks for it -->
@@ -317,6 +325,14 @@
           <input type="text" class="form-control"
               ng-model="input.house.homeinfo"
               id="q_homeinfo"/>
+        </div>
+
+        <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
+          <label for="q_phone">Phone number for contact during the weekend:</label><br/>
+          <input type="text" class="form-control"
+              ng-model="input.house.phone"
+              placeholder="Phone number"
+              id="q_phone"/>
         </div>
 
         <div class="form-group" ng-show="input.house.type === 'guest' || input.house.type === 'host'">
